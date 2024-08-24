@@ -1,19 +1,23 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const cors = require('cors');
-const { Pool } = require('pg');
+const mongoose = require('mongoose');
 
 const app = express();
 const port = 7878; 
-const patientroute=require('./routes/patient.route')
-const doctorroute=require('./routes/doctor.router')
+
+mongoose.connect(
+    'mongodb+srv://heycharan:8CA3WEy0czKSIyLf@appethon.5ebyw.mongodb.net/hemotrack?retryWrites=true&w=majority&appName=AppeThon ',
+).then(() => {
+    console.log('Database Connected');
+}).catch((err) => {
+    console.error('Database Connection Error:', err);
+});
 
 app.use(cors());
 app.use(express.json());
-app.use('/patient',patientroute);
-app.use('/doctor',doctorroute)
 
-
+const patientrouter=require('./routes/patient');
+app.use('/patient',patientrouter)
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
