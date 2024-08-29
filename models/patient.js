@@ -2,15 +2,18 @@ const mongoose = require('mongoose');
 
 const PatientSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  dob: { type: Date, required: true },
+  dob: { type: String, required: true },
   gender: { type: String, required: true },
   phone: { type: String, required: true },
-  preference: { type: String },
   patient_history: {
     previous_dialysis: { type: [String], default: [] },
     last_dialysis_date: { type: Date }
   },
-  blood_group: { type: String, required: true }
+  blood_group: { type: String, required: true },
+  nextappointment:{
+    date:{type:Date},
+    time:{type:String}
+  }
 },{timestamps:true});
 
 module.exports = mongoose.model('Patient', PatientSchema);

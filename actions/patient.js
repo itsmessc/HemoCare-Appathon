@@ -8,7 +8,8 @@ exports.addpatient=(req,res)=>{
         gender,
         phone,
         patient_history,
-        blood_group
+        blood_group,
+        nextappointment:{date:null,time:null}
     })
     patient.save()
     .then(()=>{

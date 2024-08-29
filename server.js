@@ -19,9 +19,11 @@ app.use(express.json());
 const patientrouter=require('./routes/patient');
 const staffroute=require('./routes/staff')
 const appointmentroute=require('./routes/appointment')
+const machine=require('./routes/machine')
 app.use('/patient',patientrouter)
 app.use('/staff',staffroute)
 app.use('/appointment',appointmentroute)
+app.use('/machine',machine)
 
 app.listen(port,() => {
     console.log(`Server is running on port ${port}`);

@@ -7,11 +7,12 @@ exports.addstaff=(req,res)=>{
         name:req.body.name,
         position:req.body.position,
         phone:req.body.phone,
-        location:req.body.location,
-        department:req.body.department
+        blood_group:req.body.blood_group,
+        password:req.body.password
     }).then((staff)=>{
         res.json({status:staff.name+'registered'})
     }).catch(err=>{
         res.send('error'+err)
     })
 }
+
