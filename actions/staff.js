@@ -1,5 +1,6 @@
 const staff = require('../models/staff');
 
+
 exports.addstaff=(req,res)=>{
     console.log(req.body);
     
@@ -16,3 +17,16 @@ exports.addstaff=(req,res)=>{
     })
 }
 
+exports.login=(req,res)=>{
+    staff.findOne({
+        phone:req.body.phone,
+    }).then(staff=>{
+        if(staff.password==req.body.password){
+            res.json({status:staff.name+'logged in'})
+        }else{
+            res.json({error:'Incorrect Password'})
+        }
+    }).catch(err=>{
+        res.send('Wrong mobile number'+err)
+    })
+}
