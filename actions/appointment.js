@@ -1,4 +1,4 @@
-const Appointment = require('../models/appointment.js')
+const Appointment = require('../models/appointment.js');
 const Machine = require('../models/machine.js')
 const cron = require('node-cron');
 
@@ -33,43 +33,30 @@ exports.addappointment = async (req, res) => {
   };
   
 
-async function updateMachineStatusOnAppointmentEnd(appointmentId) {
-    try {
-      // Find the appointment
-      const appointment = await Appointment.findById(appointmentId).populate('machine_id');
-  
-      if (!appointment) {
-        throw new Error('Appointment not found');
-      }
-  
-      // Check if the current time is past the end time of the appointment
-      if (new Date() > new Date(appointment.end_time)) {
-        // Update the machine's status to 'vacant'
-        await Machine.findByIdAndUpdate(appointment.machine_id, { status: 'Vacant',start_time: null,
-            end_time: null });
-  
-        console.log('Machine status updated to vacant');
-      } else {
-        console.log('Appointment has not ended yet');
-      }
-    } catch (error) {
-      console.error('Error updating machine status:', error);
-    }
-  }
 
-  cron.schedule('*/1 * * * *', async () => {
-    try {
-      
-      const appointments = await Appointment.find({
-        end_time: { $lt: new Date() },
-      }).populate('machine_id');
+
+cron.schedule('*/1 * * * *', async () => {
+  console.log('hello');
   
-      for (const appointment of appointments) {
-        if (appointment.machine_id.status === 'Occupied') {
-          await updateMachineStatusOnAppointmentEnd(appointment._id);
+    try {
+        const machines = await Machine.find({
+          $or: [
+              { end_time: { $lt: new Date() } },
+              { end_time: { $eq: null } }
+          ],
+            status: 'Occupied' // Only update occupied machines
+        });
+
+        for (const machine of machines) {
+            await Machine.findByIdAndUpdate(machine._id, { 
+                status: 'Vacant', 
+                start_time: null,
+                end_time: null 
+            });
         }
-      }
+        console.log('Machine status updated to vacant');
     } catch (error) {
-      console.error('Error running cron job:', error);
+        console.error('Error running cron job:', error);
     }
-  });
+});
+

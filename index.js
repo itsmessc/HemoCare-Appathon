@@ -44,8 +44,8 @@ io.on('connection', (socket) => {
 const Machine = require('./models/machine');
 
 Machine.watch().on('change', (change) => {
-    io.emit('machineUpdate', change.fullDocument);
-    console.log(change.fullDocument)
+    io.emit('machineUpdate', change);
+    console.log(change)
 });
 
 server.listen(port, () => {
