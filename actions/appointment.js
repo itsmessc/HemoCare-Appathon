@@ -11,7 +11,8 @@ exports.addappointment = async (req, res) => {
         end_time: req.body.end_time,
         duration: req.body.duration,
         machine_id: req.body.machine_id,
-        notes: req.body.notes
+        notes: req.body.notes,
+        type:req.body.type
       });
   
       // Update the machine status to 'Occupied'
@@ -52,9 +53,9 @@ cron.schedule('*/1 * * * *', async () => {
                 status: 'Vacant', 
                 start_time: null,
                 end_time: null 
-            });
+            }).then(()=>{console.log('Machine status updated to vacant',machine._id);});
         }
-        console.log('Machine status updated to vacant');
+        
     } catch (error) {
         console.error('Error running cron job:', error);
     }

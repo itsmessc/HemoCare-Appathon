@@ -42,6 +42,35 @@ io.on('connection', (socket) => {
 
 // Watch for changes in the Machine collection
 const Machine = require('./models/machine');
+const Appointments=require('./models/appointment');
+
+Appointments.watch().on('change', async (change) => {
+    try {
+        // Check if the change type is 'insert' or 'update'
+        if (change.operationType === 'insert' || change.operationType === 'update') {
+            // Fetch the full document based on the document key
+            const appointment = await Appointments.findById(change.documentKey._id);
+
+            if (appointment) {
+                // Check the type of the appointment or its status
+                if (appointment.type === 'Reservation') {
+                    // Emit the appointment update to the clients
+                    io.emit('appointmentreservation', appointment);
+                    console.log('Appointment reservation updated:', appointment);
+                } else {
+                    // Log or handle other types of appointments if needed
+                    console.log('Other appointment type or status:', appointment);
+                }
+            } else {
+                console.error('Appointment not found for ID:', change.documentKey._id);
+            }
+        }
+    } catch (err) {
+        console.error('Error fetching or handling document:', err);
+    }
+});
+
+
 
 Machine.watch().on('change', async (change) => {
     try {
