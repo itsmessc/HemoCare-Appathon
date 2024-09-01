@@ -1,94 +1,58 @@
-import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, FlatList } from 'react-native';
-import io from 'socket.io-client';
+const express = require('express');
+const http = require('http');
+const socketIo = require('socket.io');
+const cors = require('cors');
+const mongoose = require('mongoose');
 
-export default function App() {
-  const [machineData, setMachineData] = useState(null);
+const app = express();
+const server = http.createServer(app);
+const io = socketIo(server, { cors: { origin: "*" } }); // Adjust CORS settings as needed
 
-  useEffect(() => {
-    // Connect to the Socket.IO server
-    const socket = io('http://192.168.240.31:7878'); // Update the URL if necessary
+const port = 7878; 
 
-    // Listen for connection
-    socket.on('connect', () => {
-      console.log('Connected to the server');
-    });
+mongoose.connect(
+    'mongodb+srv://heycharan:8CA3WEy0czKSIyLf@appethon.5ebyw.mongodb.net/hemotrack?retryWrites=true&w=majority&appName=AppeThon ',
+).then(() => {
+    console.log('Database Connected');
+}).catch((err) => {
+    console.error('Database Connection Error:', err);
+});
 
-    // Listen for machine updates
-    socket.on('machineUpdate', (data) => {
-      console.log('Machine update received:', data);
-      setMachineData(data);
-    });
+app.use(cors());
+app.use(express.json());
 
-    // Handle disconnection
+const patientrouter = require('./routes/patient');
+const staffroute = require('./routes/staff');
+const appointmentroute = require('./routes/appointment');
+const machine = require('./routes/machine');
+app.use('/patient', patientrouter);
+app.use('/staff', staffroute);
+app.use('/appointment', appointmentroute);
+app.use('/machine', machine);
+
+// WebSocket Connection
+io.on('connection', (socket) => {
+    console.log('A user connected');
+
+    // Handle disconnect
     socket.on('disconnect', () => {
-      console.log('Disconnected from the server');
+        console.log('User disconnected');
     });
+});
 
-    // Cleanup on component unmount
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
+// Watch for changes in the Machine collection
+const Machine = require('./models/machine');
 
-  const renderItem = ({ item }) => (
-    <View style={styles.listItem}>
-      <Text style={styles.label}>{item.label}</Text>
-      <Text style={styles.value}>{item.value}</Text>
-    </View>
-  );
+Machine.watch().on('change', async (change) => {
+    try {
+        const fullDocument = await Machine.findById(change.documentKey._id);
+        io.emit('machineUpdate', fullDocument);
+        console.log(fullDocument);
+    } catch (err) {
+        console.error('Error fetching full document:', err);
+    }
+});
 
-  // Prepare data for the FlatList
-  const machineDetails = machineData ? [
-    { label: 'Machine Type:', value: machineData.machine_type },
-    { label: 'Serial Number:', value: machineData.manufacturing_serial_number },
-    { label: 'Location:', value: machineData.location },
-    { label: 'Status:', value: machineData.status },
-    { label: 'Last Updated:', value: new Date(machineData.updatedAt).toLocaleString() }
-  ] : [];
-
-  return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Machine Status Update</Text>
-      {machineData ? (
-        <FlatList
-          data={machineDetails}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.label}
-        />
-      ) : (
-        <Text>Waiting for machine data...</Text>
-      )}
-      <StatusBar style="auto" />
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-  },
-  header: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  listItem: {
-    flexDirection: 'row',
-    marginBottom: 10,
-  },
-  label: {
-    fontWeight: 'bold',
-    fontSize: 16,
-    flex: 1,
-  },
-  value: {
-    fontSize: 16,
-    flex: 2,
-  },
+server.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
 });
