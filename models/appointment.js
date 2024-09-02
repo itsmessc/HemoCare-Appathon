@@ -1,7 +1,17 @@
 const mongoose = require('mongoose');
-
+const Patient=require('./patient');
 const AppointmentSchema = new mongoose.Schema({
-  patient_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Patient', required: true },
+  patient_id: { 
+    type: String, 
+    required: true,
+    validate: {
+      validator: async function(v) {
+        const patient = await Patient.findOne({ patient_id: v });
+        return !!patient;
+      },
+      message: props => `Patient with ID ${props.value} does not exist!`
+    }
+  },
   start_time: { type: Date, required: true },
   end_time: { type: Date, required: true },
   duration: { type: Number, required: true },
