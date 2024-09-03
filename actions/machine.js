@@ -17,12 +17,23 @@ exports.addmachine = (req,res)=>{
     })
 }
 
-exports.getmachines=(req,res)=>{
-    Machine.find()
-    .then((machines)=>{
-        res.status(200).json(machines)
-    })
-    .catch((err)=>{
-        res.status(400).json({message:err.message})
-    })
+exports.getmachines=async (req,res)=>{
+    try {
+        // Fetch all machines
+        const machines = await Machine.find().exec();
+    
+        // Group machines by location
+        const groupedMachines = machines.reduce((acc, machine) => {
+          const { location } = machine;
+          if (!acc[location]) {
+            acc[location] = [];
+          }
+          acc[location].push(machine);
+          return acc;
+        }, {});
+    
+        res.json(groupedMachines);
+      } catch (error) {
+        res.json({"error":error})
+      }
 }
