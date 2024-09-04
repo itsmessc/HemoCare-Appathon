@@ -29,10 +29,30 @@ app.use('/patient', patientrouter);
 app.use('/staff', staffroute);
 app.use('/appointment', appointmentroute);
 app.use('/machine', machine);
-
+const Chatbox=require('./models/chatbox');
 // WebSocket Connection
 io.on('connection', (socket) => {
     console.log('A user connected');
+
+    socket.on('message', async (data) => {
+        try {
+            // Save the message to MongoDB
+            const newMessage = new Chatbox({
+                sender_id: data.sender_id,
+                content: data.content,
+                location: data.location || '', 
+            });
+
+            await newMessage.save();
+
+            // Emit the message to all connected clients
+            io.emit('message', newMessage);
+            console.log('New message:', newMessage);
+        } catch (error) {
+            console.error('Error saving message:', error);
+        }
+    });
+
 
     // Handle disconnect
     socket.on('disconnect', () => {
@@ -40,9 +60,23 @@ io.on('connection', (socket) => {
     });
 });
 
+
+  app.get('/messages', async (req, res) => {
+    try {
+      const messages = await Chatbox.find().sort({ timestamp: 1 });
+      res.json(messages);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch messages' });
+    }
+  });
+  
+
+
+
 // Watch for changes in the Machine collection
 const Machine = require('./models/machine');
 const Appointments=require('./models/appointment');
+const { log } = require('console');
 
 Appointments.watch().on('change', async (change) => {
     try {

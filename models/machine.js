@@ -7,6 +7,7 @@ const MachineSchema = new mongoose.Schema({
   status: { type: String, required: true, enum: ['Vacant', 'Occupied', 'Maintenance', 'Under Repair'] }, 
   start_time: { type: Date },
   end_time: { type: Date},
+  patient_id:{type:String}
 },{timestamps:true});
 
 module.exports = mongoose.model('Machine', MachineSchema);

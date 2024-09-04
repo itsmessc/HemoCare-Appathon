@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const ChatboxSchema = new mongoose.Schema({
-  sender_id: { type: mongoose.Schema.Types.ObjectId, required: true },
+  sender_id: { type: String, required: true },
   timestamp: { type: Date, default: Date.now },
   content: { type: String, required: true },
   location: { type: String }

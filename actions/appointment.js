@@ -18,7 +18,7 @@ exports.addappointment = async (req, res) => {
       // Update the machine status to 'Occupied'
       const machineUpdateResult = await Machine.updateOne(
         { _id: req.body.machine_id },
-        { $set: { status: 'Occupied' ,start_time: req.body.start_time, end_time: req.body.end_time} }
+        { $set: { status: 'Occupied' ,start_time: req.body.start_time, end_time: req.body.end_time,patient_id:req.body.patient_id} }
       );
   
       if (machineUpdateResult.modifiedCount === 0) {
@@ -34,6 +34,16 @@ exports.addappointment = async (req, res) => {
   };
   
 
+exports.getappointments = async (req,res)=>{
+  try{
+    const appointments= await Appointment.find().exec();
+    res.json(appointments);
+  }
+  catch(error){
+    res.json({"error":error})
+  }
+
+}
 
 
 cron.schedule('*/1 * * * *', async () => {
