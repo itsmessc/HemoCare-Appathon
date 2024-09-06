@@ -16,15 +16,19 @@ exports.addappointment = async (req, res) => {
       });
   
       // Update the machine status to 'Occupied'
-      const machineUpdateResult = await Machine.updateOne(
-        { _id: req.body.machine_id },
-        { $set: { status: 'Occupied' ,start_time: req.body.start_time, end_time: req.body.end_time,patient_id:req.body.patient_id} }
-      );
-  
-      if (machineUpdateResult.modifiedCount === 0) {
-        throw new Error('Machine status update failed or machine not found');
+      if (req.body.type!=="Reservation"){
+        const machineUpdateResult = await Machine.updateOne(
+          { _id: req.body.machine_id },
+          { $set: { status: 'Occupied' ,start_time: req.body.start_time, end_time: req.body.end_time,patient_id:req.body.patient_id} }
+          
+        );
+        if (machineUpdateResult.modifiedCount === 0) {
+          throw new Error('Machine status update failed or machine not found');
+        }
+    
       }
   
+      
       // Respond with success
       res.status(200).json({ status: 'Appointment added and machine marked as occupied' });
     } catch (err) {
@@ -36,13 +40,32 @@ exports.addappointment = async (req, res) => {
 
 exports.getappointments = async (req,res)=>{
   try{
-    const appointments= await Appointment.find().exec();
+    const appointments= await Appointment.find({type:"Reservation",start_time:{$gt: new Date()}});
     res.json(appointments);
   }
   catch(error){
     res.json({"error":error})
   }
 
+}
+
+
+exports.cancelappointment=async (req,res)=>{
+  try{
+    const appointmentId = req.params.id;
+    const appointment = await Appointment.findById(appointmentId);
+    if (!appointment) {
+      return res.status(404).json({ message: 'Appointment not found' });
+    }
+    await Appointment.findByIdAndDelete(appointmentId);
+    res.status(200).json({ message: 'Appointment cancelled successfully' });
+  
+  }
+  catch (error) {
+    console.error('Error cancelling appointment:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+    
 }
 
 
