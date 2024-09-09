@@ -34,6 +34,16 @@ const Chatbox=require('./models/chatbox');
 io.on('connection', (socket) => {
     console.log('A user connected');
 
+    socket.on('getHistory', async () => {
+        try {
+            const messages = await Chatbox.find().sort({ createdAt: -1 });
+            socket.emit('history', messages);
+        } catch (err) {
+            console.error('Error fetching messages:', err);
+        }
+    });
+
+    // Handle incoming messages
     socket.on('message', async (data) => {
         try {
             // Save the message to MongoDB
@@ -45,7 +55,7 @@ io.on('connection', (socket) => {
 
             await newMessage.save();
 
-            // Emit the message to all connected clients
+            // Emit the new message to all connected clients
             io.emit('message', newMessage);
             console.log('New message:', newMessage);
         } catch (error) {

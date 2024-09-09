@@ -12,7 +12,8 @@ exports.addappointment = async (req, res) => {
         duration: req.body.duration,
         machine_id: req.body.machine_id,
         notes: req.body.notes,
-        type:req.body.type
+        type:req.body.type,
+        staff_id:req.body.staff_id
       });
   
       // Update the machine status to 'Occupied'
