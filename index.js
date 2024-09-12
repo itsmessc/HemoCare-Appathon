@@ -109,6 +109,11 @@ Appointments.watch().on('change', async (change) => {
                 console.error('Appointment not found for ID:', change.documentKey._id);
             }
         }
+        if (change.operationType==='delete'){
+            console.log("Delete detected");
+            
+            io.emit('cancelreser',change.documentKey._id)
+        }
     } catch (err) {
         console.error('Error fetching or handling document:', err);
     }
