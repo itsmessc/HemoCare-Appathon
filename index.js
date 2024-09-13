@@ -99,6 +99,7 @@ Appointments.watch().on('change', async (change) => {
     try {
         if (change.operationType === 'insert' || change.operationType === 'update') {
             const appointment = await Appointments.findById(change.documentKey._id);
+            console.log("Tet"+appointment)
             if (appointment) {
                 if (appointment.type === 'Reservation') {
                     io.emit('appointmentreservation', appointment);
