@@ -1,0 +1,1 @@
+export const ip ="https://appathon-backend.onrender.com"
