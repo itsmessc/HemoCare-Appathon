@@ -36,7 +36,7 @@ const BottomTabNavigator = () => {
       })}
     >
       <Tab.Screen name="Dashboard" component={Dashboard} options={{headerShown:false}}/>
-      <Tab.Screen name="Chat" component={Chat} />
+      <Tab.Screen name="Chat" component={Chat} options={{headerShown:false}}/>
       <Tab.Screen name='Reservations' component={Reservations}/>
     </Tab.Navigator>
   );

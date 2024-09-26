@@ -3,6 +3,7 @@
 # dependencies
 node_modules/
 android/
+constants/variables.js
 # Expo
 .expo/
 dist/

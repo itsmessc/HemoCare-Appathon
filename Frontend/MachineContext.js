@@ -11,76 +11,91 @@ export const MachineContext = createContext();
 // Create a provider component
 export const MachineProvider = ({ children }) => {
   const [machines, setMachines] = useState({});
-  const [appointment, setappointment] = useState({});
+  const [appointments, setAppointments] = useState({});
+  const [availableLocations, setLocations] = useState([]);
+
+  // Fetch initial machine data from the backend
+  const fetchMachineData = async () => {
+    try {
+      const response = await fetch(`${ip}/machine/getdetails`);
+      const data = await response.json();
+      setMachines(data); // Store machine data
+      setLocations(Object.keys(data)); // Extract locations from machine data
+    } catch (error) {
+      console.error("Error fetching machine data:", error);
+    }
+  };
+
+  // Fetch initial appointment data from the backend
+  const fetchAppointmentData = async () => {
+    try {
+      const response = await fetch(`${ip}/appointment/reservations`);
+      const data = await response.json();
+      setAppointments(data); // Store appointment data
+    } catch (error) {
+      console.error("Error fetching appointment data:", error);
+    }
+  };
 
   useEffect(() => {
-    // Fetch initial machine data from the backend
-    fetch(`${ip}/machine/getdetails`)
-      .then((response) => response.json())
-      .then((data) => {
-        // Assuming data is structured with locations as keys
-        setMachines(data);
-      })
-      .catch((error) => console.error("Error fetching data:", error));
-    // Handle successful connection
+    // Fetch data once the component mounts
+    fetchMachineData();
+    fetchAppointmentData();
+
+    // WebSocket connection for receiving machine updates
     socket.on("connect", () => {
       console.log("Connected to WebSocket server");
     });
 
-    fetch(`${ip}/appointment/reservations`)
-      .then((response) => response.json())
-      .then((data) => {
-        setappointment(data);
-      })
-      .catch((error) => console.error("Error fetching data:", error));
-
-    socket.on("appointmentreservation", (appointment) => {
-      console.log("Appointment reservation received:", appointment);
-      setappointment((prevappoint) => {
-        return [
-          ...prevappoint.filter((item) => item._id !== appointment._id), // Filter out the item with the same _id
-          appointment, // Add the new appointment to the end
-        ];
-      });
-    });
-
-    socket.on("cancelreser",(id)=>{
-      setappointment((prevappoint) => {
-        return prevappoint.filter((item) => item._id !== id); 
-      });
-    })
-
-    // Handle receiving machine data
+    // Handle machine updates from WebSocket
     socket.on("machineUpdate", (machine) => {
-      //console.log("Machine update received:", machine);
-      //console.log("Current machines state:", machines);
-      // Update state based on the new machine data
       setMachines((prevMachines) => {
-        const { location } = machine; // Extract the location from the machine object
+        const { location } = machine;
         return {
           ...prevMachines,
           [location]: prevMachines[location]
             ? prevMachines[location]
-                .filter((item) => item._id !== machine._id) // Remove the old machine with the same _id
-                .concat(machine) // Add the updated machine
-            : [machine], // If location does not exist, initialize with the updated machine
+                .filter((item) => item._id !== machine._id)
+                .concat(machine)
+            : [machine],
         };
       });
     });
+
+    // Handle appointment updates from WebSocket
+    socket.on("appointmentreservation", (newAppointment) => {
+      setAppointments((prevAppointments) => {
+        return [
+          ...prevAppointments.filter((item) => item._id !== newAppointment._id),
+          newAppointment,
+        ];
+      });
+    });
+
+    // Handle appointment cancellations from WebSocket
+    socket.on("cancelreser", (appointmentId) => {
+      setAppointments((prevAppointments) => {
+        return prevAppointments.filter((item) => item._id !== appointmentId);
+      });
+    });
+
     // Handle connection errors
     socket.on("connect_error", (error) => {
       console.error("Connection Error:", error);
     });
-    // Cleanup WebSocket handlers
+
+    // Cleanup WebSocket handlers when the component unmounts
     return () => {
       socket.off("connect");
       socket.off("machineUpdate");
+      socket.off("appointmentreservation");
+      socket.off("cancelreser");
       socket.off("connect_error");
     };
   }, []);
 
   return (
-    <MachineContext.Provider value={{ machines, setMachines, appointment }}>
+    <MachineContext.Provider value={{ machines, appointments, availableLocations ,setMachines}}>
       {children}
     </MachineContext.Provider>
   );

@@ -1,100 +1,78 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, Keyboard,Platform } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, Keyboard } from 'react-native';
 import io from 'socket.io-client';
-import { getlocation, getToken, removeToken, storelocation, storeToken } from '../store';
-import {jwtDecode} from 'jwt-decode';
+import { getToken, removeToken, storeToken } from '../store';
+import jwtDecode from 'jwt-decode'; // Ensure this is imported correctly
 import { ip } from '../constants/variables';
-import { Picker } from '@react-native-picker/picker';
-import { Appbar, Menu } from 'react-native-paper';
-import { MachineContext } from '../MachineContext';
-// Connect to the WebSocket server
+import { Appbar, Menu } from 'react-native-paper'; // For app bar and dropdown menu
+import { Picker } from '@react-native-picker/picker'; // Import Picker from the correct package
+
 const socket = io(ip); // Replace with your server address
 
 export default function Chat() {
     const [messages, setMessages] = useState([]);
     const [messageText, setMessageText] = useState('');
-    const [currentUser,setusername]=useState(''); // Replace with the actual current user ID
-    const [token,settoken]=useState('')
-    const [location,setlocation]=useState('');
-    const {availableLocations}=useContext(MachineContext);
-    // Handle sending messages
-    const handleSend = async () => {
+    const [currentUser, setUsername] = useState('');
+    const [token, setToken] = useState('');
+    const [location, setLocation] = useState('');
+    const [locationMenuVisible, setLocationMenuVisible] = useState(false); // For dropdown in app bar
+    const [availableLocations] = useState(['VIP', 'General', 'ICU']); // Sample locations
+
+    const handleSend = () => {
         if (messageText.trim()) {
-          
             socket.emit('message', {
                 sender_id: token,
                 content: messageText,
-                location: location,
-                staff:currentUser
+                location: location, // Include location in the message
+                staff: currentUser
             });
             setMessageText('');
             Keyboard.dismiss();
         }
     };
 
-    const handleLocationChange = async (selectedLocation) => {
-        setlocation(selectedLocation);
-        await storelocation(selectedLocation);
-    };
-
-    
-
     useEffect(() => {
         // Fetch historical messages and listen for new messages
-        
         const fetchHistory = () => {
             socket.emit('getHistory');
         };
         const fetchToken = async () => {
             const token = await getToken();
             const decoded = jwtDecode(token);
-            setusername(decoded.name);
+            setUsername(decoded.name);
             console.log("Name",decoded.name)
-            settoken(decoded.id);
-            loc=await getlocation();
-            if(loc){
-                setlocation(loc);
-            }
-            
+            setToken(decoded.id);
         };
         fetchToken();
         
         socket.on('history', (historicalMessages) => {
             console.log(historicalMessages);
-        
-            // Format and filter messages by location
-            const formattedMessages = historicalMessages
-                .map((msg) => ({
-                    _id: msg._id.toString(),
-                    text: msg.content,
-                    location: msg.location,
-                    createdAt: new Date(msg.createdAt),
-                    user: {
-                        _id: msg.sender_id,
-                        name: msg.staff, // Replace with actual user names if available
-                    },
-                }))
-                .sort((a, b) => b.createdAt - a.createdAt) // Sort messages by date in descending order
-                .filter((msg) => msg.location === location); // Filter messages by the selected location
-        
-            setMessages(formattedMessages); // Set the filtered messages in the state
+            
+            const formattedMessages = historicalMessages.map((msg) => ({
+                _id: msg._id.toString(),
+                text: msg.content,
+                createdAt: new Date(msg.createdAt),
+                user: {
+                    _id: msg.sender_id,
+                    name: msg.staff, // Replace with actual user names if available
+                },
+            }));
+            // Sort messages in descending order
+            formattedMessages.sort((a, b) => b.createdAt - a.createdAt);
+            setMessages(formattedMessages);
         });
-        
 
         socket.on('message', (message) => {
-            if(message.location==location){
-                const newMessage = {
-                    _id: message._id.toString(),
-                    text: message.content,
-                    location:message.location,
-                    createdAt: new Date(message.createdAt),
-                    user: {
-                        _id: message.sender_id,
-                        name: message.staff, // Replace with actual user names if available
-                    },
-                };
-                setMessages((prevMessages) => [newMessage, ...prevMessages]);
-            }
+            const newMessage = {
+                _id: message._id.toString(),
+                text: message.content,
+                createdAt: new Date(message.createdAt),
+                user: {
+                    _id: message.sender_id,
+                    name: message.staff, // Replace with actual user names if available
+                },
+            };
+            setMessages((prevMessages) => [newMessage, ...prevMessages]);
         });
 
         fetchHistory();
@@ -104,20 +82,30 @@ export default function Chat() {
             socket.off('history');
             socket.off('message');
         };
-    }, [location]);
+    }, []);
 
     const renderItem = ({ item }) => (
         <View
             style={[
                 styles.messageContainer,
-                item.user._id === token ? styles.currentUser : styles.otherUser
+                item.user._id === token ? styles.currentUser : styles.otherUser, // Conditional styles based on user
+                { alignSelf: item.user._id === token ? 'flex-end' : 'flex-start' } // Align right for the current user
             ]}
         >
-            {item.user._id === token ? "" : <Text style={styles.userIdText}>{item.user.name}</Text>}
+            {item.user._id !== token && <Text style={styles.userIdText}>{item.user.name}</Text>}
             <Text style={styles.messageText}>{item.text}</Text>
-            
         </View>
     );
+
+    // Dropdown handler for location selection
+    const handleLocationChange = (selectedLocation) => {
+        setLocation(selectedLocation);
+    };
+
+    // Show location dropdown in Appbar
+    const toggleMenu = () => {
+        setLocationMenuVisible(!locationMenuVisible);
+    };
 
     return (
         <View style={{ flex: 1 }}>
@@ -126,17 +114,22 @@ export default function Chat() {
                     {/* App Bar with Dropdown Menu */}
                     <Appbar.Header>
                         <Appbar.Content title="Chat" />
-                        <View style={styles.pickerContainer}>
-                            <Picker
-                                selectedValue={location}
-                                style={styles.picker}
-                                onValueChange={(itemValue) => handleLocationChange(itemValue)}
-                            >
-                                {availableLocations.map((loc) => (
-                                    <Picker.Item key={loc} label={loc} value={loc} />
-                                ))}
-                            </Picker>
-                        </View>
+                        <Menu
+                            visible={locationMenuVisible}
+                            onDismiss={toggleMenu}
+                            anchor={<Appbar.Action icon="menu" color="black" onPress={toggleMenu} />}
+                        >
+                            {availableLocations.map((loc) => (
+                                <Menu.Item
+                                    key={loc}
+                                    onPress={() => {
+                                        handleLocationChange(loc);
+                                        toggleMenu();
+                                    }}
+                                    title={loc}
+                                />
+                            ))}
+                        </Menu>
                     </Appbar.Header>
 
                     {/* Chat Interface */}
@@ -195,17 +188,14 @@ const styles = StyleSheet.create({
         maxWidth: '80%',
     },
     currentUser: {
-        backgroundColor: '#5FCD9E', // Blue background for current user's messages
-        alignSelf: 'flex-end',
-        
+        backgroundColor: '#5FCD9E', // Green background for current user's messages
     },
     otherUser: {
-        backgroundColor: '#fff', // Grey background for other users' messages
-        alignSelf: 'flex-start',
+        backgroundColor: '#fff', // White background for other users' messages
     },
     messageText: {
         fontSize: 16,
-        color: '#000', // White text for current user's messages
+        color: '#000', // Black text for messages
     },
     userIdText: {
         fontSize: 10,
@@ -247,15 +237,8 @@ const styles = StyleSheet.create({
         fontSize: 18,
         marginBottom: 10,
     },
-    pickerContainer: {
-        width: Platform.OS === 'ios' ? '30%' : '50%', // Adjust width based on platform
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginRight: 10,
-    },
     picker: {
+        width: 200,
         height: 50,
-        color: '#000', // White color for iOS
-        width: Platform.OS === 'ios' ? undefined : 150, // Set width for Android picker
     },
 });

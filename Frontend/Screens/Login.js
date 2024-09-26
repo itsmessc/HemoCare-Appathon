@@ -5,6 +5,7 @@ import axios from "axios"; // Ensure axios is imported
 import colors from "../constants/colors";
 import MyTextInput from "../widgets/textinput";
 import { getToken, storeToken } from "../store";
+import { ip } from "../constants/variables";
 
 function Login({ navigation }) {
   const [phone, setPhone] = useState("");
@@ -30,7 +31,7 @@ function Login({ navigation }) {
 
   const handleSubmit = async () => {
     try {
-      const response = await axios.post("http://192.168.138.144:7878/staff/login", {
+      const response = await axios.post(`${ip}/staff/login`, {
         phone,
         password,
       });
