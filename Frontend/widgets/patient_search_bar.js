@@ -87,7 +87,8 @@ const PatientSearchBar = ({}) => {
 
 const styles = StyleSheet.create({
   input: {
-    marginTop: 12,
+    marginTop: 10,
+    height: 50,
     marginBottom: 2,
     backgroundColor: colors.white,
     color: colors.darkgreen,
