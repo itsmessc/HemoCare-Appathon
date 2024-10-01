@@ -4,7 +4,7 @@ import PieChart from "react-native-pie-chart";
 import colors from "../constants/colors";
 
 export default ({ dimensions, values }) => {
-  const sliceColor = [colors.green, colors.green, colors.red];
+  const sliceColor = [colors.prep, colors.green, colors.red];
   const total = values.reduce((acc, value) => acc + value, 0);
 
   return (

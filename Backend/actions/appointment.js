@@ -14,20 +14,24 @@ exports.addappointment = async (req, res) => {
         notes: req.body.notes,
         type:req.body.type,
         staff_id:req.body.staff_id
-      });
+      }).then(async (appoint)=>{
+        if (req.body.type!=="Reservation"){
+          const machineUpdateResult = await Machine.updateOne(
+            { _id: req.body.machine_id },
+            { $set: { status: 'Preparing' ,start_time: req.body.start_time, end_time: req.body.end_time,patient_id:req.body.patient_id,appointment_id:appoint._id} }
+            
+          );
+          if (machineUpdateResult.modifiedCount === 0) {
+            throw new Error('Machine status update failed or machine not found');
+          }
+      
+        }
+      }
+        
+      );
   
       // Update the machine status to 'Occupied'
-      if (req.body.type!=="Reservation"){
-        const machineUpdateResult = await Machine.updateOne(
-          { _id: req.body.machine_id },
-          { $set: { status: 'Occupied' ,start_time: req.body.start_time, end_time: req.body.end_time,patient_id:req.body.patient_id} }
-          
-        );
-        if (machineUpdateResult.modifiedCount === 0) {
-          throw new Error('Machine status update failed or machine not found');
-        }
-    
-      }
+      
   
       
       // Respond with success
@@ -58,6 +62,12 @@ exports.cancelappointment=async (req,res)=>{
     if (!appointment) {
       return res.status(404).json({ message: 'Appointment not found' });
     }
+    await Machine.findByIdAndUpdate(appointment.machine_id,{
+      status: 'Vacant',
+      start_time: null,
+      end_time: null,
+      appointment_id:null
+    })
     await Appointment.findByIdAndDelete(appointmentId);
     res.status(200).json({ message: 'Appointment cancelled successfully' });
   
@@ -86,8 +96,25 @@ cron.schedule('*/1 * * * *', async () => {
             await Machine.findByIdAndUpdate(machine._id, { 
                 status: 'Vacant', 
                 start_time: null,
-                end_time: null 
+                end_time: null ,
+                appointment_id:null
             }).then(()=>{console.log('Machine status updated to vacant',machine._id);});
+        }
+        const appointment = await Appointment.find({
+          start_time: { $lt: new Date() },
+          end_time: { $gt: new Date() }
+        });
+        
+        for (const app of appointment) {
+          const machine = await Machine.findById(app.machine_id);
+          if (machine.status === 'Vacant') { // Check if the machine is vacant
+            await Machine.findByIdAndUpdate(app.machine_id, {
+              status: 'Preparing',
+              start_time:app.start_time,
+              end_time:app.end_time,
+              appointment_id:app._id
+            });
+          }
         }
         
     } catch (error) {

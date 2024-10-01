@@ -6,7 +6,7 @@ import axios from 'axios';
 import { ip } from '../constants/variables';
 
 const Reservations = ({navigation}) => {
-  const { appointment } = useContext(MachineContext);
+  const { appointments } = useContext(MachineContext);
   const [search, setSearch] = useState('');
   const [filteredReservations, setFilteredReservations] = useState([]);
 
@@ -28,14 +28,14 @@ const Reservations = ({navigation}) => {
   useEffect(() => {
     if (search) {
       setFilteredReservations(
-        appointment.filter(reservation =>
+        appointments.filter(reservation =>
           reservation.patient_id === search
         )
       );
     } else {
-      setFilteredReservations(appointment);
+      setFilteredReservations(appointments);
     }
-  }, [search, appointment]);
+  }, [search, appointments]);
 
   const handleStart = (id) => {
     // Implement start logic here

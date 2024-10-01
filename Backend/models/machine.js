@@ -4,10 +4,11 @@ const MachineSchema = new mongoose.Schema({
   manufacturing_serial_number: { type: String, required: true },
   machine_type: { type: String, required: true },
   location: { type: String, required: true },
-  status: { type: String, required: true, enum: ['Vacant', 'Occupied', 'Maintenance', 'Under Repair'] }, 
+  status: { type: String, required: true, enum: ['Vacant', 'Occupied', 'Maintenance', 'Under Repair','Preparing'] }, 
   start_time: { type: Date },
   end_time: { type: Date},
-  patient_id:{type:String}
+  patient_id:{type:String},
+  appointment_id:{type: mongoose.Schema.Types.ObjectId, ref: 'Appointment'}
 },{timestamps:true});
 
 module.exports = mongoose.model('Machine', MachineSchema);

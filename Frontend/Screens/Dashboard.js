@@ -6,7 +6,7 @@ import Cards from "./Cardss"; // Ensure the import matches your file name
 import { removeToken } from "../store";
 
 function Dashboard({ navigation }) {
-  const [data, setData] = useState({ total: 0, vacant: 0, occupied: 0 });
+  const [data, setData] = useState({ total: 0, vacant: 0, occupied: 0, preparing:0 });
   const { machines } = useContext(MachineContext);
   const machine=""
 
@@ -14,18 +14,19 @@ function Dashboard({ navigation }) {
     let total = 0;
     let vacant = 0;
     let occupied = 0;
-
+    let preparing=0
     // Iterate over all locations and count total, vacant, and occupied machines
     Object.values(machines).forEach((locationMachines) => {
       locationMachines.forEach((machine) => {
         total++;
         if (machine.status === "Vacant") vacant++;
         if (machine.status === "Occupied") occupied++;
+        if (machine.status === "Preparing") preparing++;
       });
     });
 
     // Update the state with the calculated data
-    setData({ total, vacant, occupied });
+    setData({ total, vacant, occupied,preparing });
   }, [machines]); // Add machines as a dependency so that this effect runs when machines change
 
   // Prepare the entries, sort by the number of vacant machines, then map
@@ -58,8 +59,8 @@ function Dashboard({ navigation }) {
               styles.boxeinside,
               {
                 backgroundColor: "#4B70F5",
-                width: 100,
-                height: 100,
+                width: 75,
+                height: 75,
               },
             ]}
           >
@@ -71,8 +72,8 @@ function Dashboard({ navigation }) {
               styles.boxeinside,
               {
                 backgroundColor: "#3E9837",
-                width: 100,
-                height: 100,
+                width: 75,
+                height: 75,
               },
             ]}
           >
@@ -84,13 +85,26 @@ function Dashboard({ navigation }) {
               styles.boxeinside,
               {
                 backgroundColor: "#E63946",
-                width: 100,
-                height: 100,
+                width: 75,
+                height: 75,
               },
             ]}
           >
             <Text style={styles.texts}>Occupied</Text>
             <Text style={[styles.texts, styles.number]}>{data.occupied}</Text>
+          </View>
+          <View
+            style={[
+              styles.boxeinside,
+              {
+                backgroundColor: "#ff9933",
+                width: 75,
+                height: 75,
+              },
+            ]}
+          >
+            <Text style={styles.texts}>Preparing</Text>
+            <Text style={[styles.texts, styles.number]}>{data.preparing}</Text>
           </View>
         </View>
 
@@ -140,14 +154,14 @@ const styles = StyleSheet.create({
     backgroundColor: "white"
   },
   boxeinside: {
-    borderRadius: 10,
+    borderRadius: 8,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
   },
   texts: {
     color: "white",
-    fontSize: 20,
+    fontSize: 15,
     fontWeight: "bold",
     textAlign: "center",
     paddingTop: 10,
@@ -156,7 +170,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     justifyContent: "center",
-    gap: 15,
+    gap: 10,
     alignItems: "flex-start",
   },
   number: {

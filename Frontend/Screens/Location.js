@@ -4,12 +4,13 @@ import { useRoute } from "@react-navigation/native";
 import MachineOcc from "../widgets/machoccupied"; // Ensure the correct import path
 import MachineVacant from "../widgets/machvacant"; // Ensure the correct import path
 import { MachineContext } from "../MachineContext";
+import MachinePrep from "../widgets/machprep";
 
 const Location = ({ navigation }) => {
   const route = useRoute(); // Get route object
   const location = route.params.location; // Extract locationData from route params
 
-  const { machines, appointment } = useContext(MachineContext);
+  const { machines, appointments } = useContext(MachineContext);
   const [data, setData] = useState([]);
   useLayoutEffect(() => {
     const headerTitle = `Location: ${location}`;
@@ -109,18 +110,28 @@ const Location = ({ navigation }) => {
           item.status === "Occupied" ? (
             <MachineOcc
               machine={item}
-              reservations={appointment.filter(
+              reservations={appointments.filter(
                 (appointment) => appointment.machine_id === item._id
               )}
             />
           ) : (
-            <MachineVacant
-            navigation={navigation}
+            item.status === "Vacant" ?(
+              <MachineVacant
+                navigation={navigation}
+                  machine={item}
+                  reservations={appointments.filter(
+                    (appointment) => appointment.machine_id === item._id
+                  )}
+                />
+            ):(
+              <MachinePrep
+              navigation={navigation}
               machine={item}
-              reservations={appointment.filter(
+              reservations={appointments.filter(
                 (appointment) => appointment.machine_id === item._id
               )}
-            />
+              />
+            )
           )
         }
         contentContainerStyle={styles.listContainer}

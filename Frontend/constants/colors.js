@@ -7,5 +7,6 @@ export default {
     white: "#FFFFFF",
     black: "#000000",
     blue: "#5989E5",
-    lightgray:"#eee"
+    lightgray:"#eee",
+    prep:"#EC811B"
 }
