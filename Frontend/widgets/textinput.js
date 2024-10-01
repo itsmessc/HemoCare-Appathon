@@ -7,6 +7,8 @@ export default function MyTextInput({
   onChange,
   label,
   numberOfLines = 1,
+  onBlur,
+  onFocus,
 }) {
   return (
     <View>
@@ -20,6 +22,8 @@ export default function MyTextInput({
         activeOutlineColor={colors.darkgreen}
         outlineColor={colors.green}
         onChangeText={onChange}
+        onFocus={onFocus}
+        onBlur={onBlur}
       />
     </View>
   );

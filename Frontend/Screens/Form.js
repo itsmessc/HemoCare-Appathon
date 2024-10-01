@@ -6,13 +6,15 @@ import DateTimePickerComponent from "../widgets/datepicker";
 import Dropdown from "../widgets/dropdown";
 import { Button } from "react-native-paper";
 import { MachineContext } from "../MachineContext";
-import axios from 'axios';
+import axios from "axios";
 import { ip } from "../constants/variables";
 import { useRoute } from "@react-navigation/native";
+import PatientSearchBar from "../widgets/patient_search_bar";
+import { ScrollView } from "react-native-web";
 
 function Form({ location = null, navigation }) {
   const route = useRoute();
-  const mac=route.params.machine?route.params.machine:"";
+  const mac = route.params.machine ? route.params.machine : "";
   const [locationOptions, setLocationOptions] = useState([]);
   const [machineList, setMachineList] = useState([]);
   const [patientID, setPatientID] = useState("");
@@ -22,7 +24,7 @@ function Form({ location = null, navigation }) {
   const [locationID, setLocationID] = useState(location);
   const [machineID, setMachineID] = useState("");
   const [dateTime, setDateTime] = useState(new Date());
-  const [endtime, setEndtime] = useState('');
+  const [endtime, setEndtime] = useState("");
   const { machines } = useContext(MachineContext);
 
   const isReservation = mac === "";
@@ -47,7 +49,7 @@ function Form({ location = null, navigation }) {
 
   useEffect(() => {
     console.log("Changing");
-    
+
     if (locationID && machines[locationID]) {
       const machineOptions = machines[locationID].map((machine) => ({
         label: machine.manufacturing_serial_number,
@@ -55,8 +57,6 @@ function Form({ location = null, navigation }) {
         status: machine.status,
       }));
 
-
-      
       setMachineList(machineOptions);
     } else {
       setMachineList([]);
@@ -92,18 +92,23 @@ function Form({ location = null, navigation }) {
         end_time: endtime, // Make sure endtime is in the correct format
         appointment_time: endtime, // Adjust this field as necessary
         duration,
-        type: isReservation?"Reservation":"Regular"
+        type: isReservation ? "Reservation" : "Regular",
       });
       console.log("Appointment submitted successfully:", response.data);
       navigation.navigate("Dashboard");
-      alert("Appointment added successful")
+      alert("Appointment added successful");
     } catch (error) {
-      console.error("Error submitting appointment:", error.response?.data || error.message);
+      console.error(
+        "Error submitting appointment:",
+        error.response?.data || error.message
+      );
     }
+    pvUHs9F68kctuv7;
   }
 
   return (
     <SafeAreaView style={styles.container}>
+      <PatientSearchBar />
       <MyTextInput
         label="Patient ID"
         value={patientID}
@@ -119,13 +124,17 @@ function Form({ location = null, navigation }) {
         <MyTextInput
           label="Hrs"
           value={(hours ?? "").toString()}
-          onChange={(val) => setHours(isNaN(parseInt(val, 10)) ? null : parseInt(val, 10))}
+          onChange={(val) =>
+            setHours(isNaN(parseInt(val, 10)) ? null : parseInt(val, 10))
+          }
         />
         <View style={styles.width20} />
         <MyTextInput
           label="Mins"
           value={(minutes ?? "").toString()}
-          onChange={(val) => setMinutes(isNaN(parseInt(val, 10)) ? null : parseInt(val, 10))}
+          onChange={(val) =>
+            setMinutes(isNaN(parseInt(val, 10)) ? null : parseInt(val, 10))
+          }
         />
       </View>
       <Text>End Time: {new Date(endtime).toLocaleString()}</Text>
@@ -136,18 +145,18 @@ function Form({ location = null, navigation }) {
         multiline
       />
       <View>
-          <Dropdown
-            label="Select location"
-            placeholder={{ label: "Select Location", value: null }}
-            options={locationOptions}
-            value={mac == ""?locationID:mac.location}
-            onValueChange={setLocationID}
-          />
+        <Dropdown
+          label="Select location"
+          placeholder={{ label: "Select Location", value: null }}
+          options={locationOptions}
+          value={mac == "" ? locationID : mac.location}
+          onValueChange={setLocationID}
+        />
         <Dropdown
           label="Select Machine ID"
           placeholder={{ label: "Select Machine", value: null }}
           options={machineList}
-          value={mac==""?machineID:mac._id}
+          value={mac == "" ? machineID : mac._id}
           onValueChange={setMachineID}
         />
       </View>
@@ -160,11 +169,7 @@ function Form({ location = null, navigation }) {
         >
           Cancel
         </Button>
-        <Button
-          style={styles.submitButton}
-          mode="contained"
-          onPress={onSubmit}
-        >
+        <Button style={styles.submitButton} mode="contained" onPress={onSubmit}>
           Submit
         </Button>
       </View>
