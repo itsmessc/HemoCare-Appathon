@@ -1,5 +1,18 @@
-import React, { useContext, useEffect, useState, useLayoutEffect } from "react";
-import { Text, SafeAreaView, StyleSheet, View, ScrollView } from "react-native";
+import React, {
+  useContext,
+  useEffect,
+  useState,
+  useLayoutEffect,
+  useCallback,
+} from "react";
+import {
+  Text,
+  SafeAreaView,
+  StyleSheet,
+  View,
+  ScrollView,
+  TextInput,
+} from "react-native";
 import MyTextInput from "../widgets/textinput";
 import colors from "../constants/colors";
 import DateTimePickerComponent from "../widgets/datepicker";
@@ -10,6 +23,7 @@ import axios from "axios";
 import { ip } from "../constants/variables";
 import { useRoute } from "@react-navigation/native";
 import PatientSearchBar from "../widgets/patient_search_bar";
+import debounce from "lodash.debounce";
 
 function Form({ location = null, navigation }) {
   const route = useRoute();
@@ -102,7 +116,6 @@ function Form({ location = null, navigation }) {
         error.response?.data || error.message
       );
     }
-    pvUHs9F68kctuv7;
   }
 
   return (

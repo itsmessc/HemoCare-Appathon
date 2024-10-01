@@ -43,10 +43,7 @@ const PatientSearchBar = ({ state, onChange, label, onFocus, onBlur }) => {
   return (
     <View>
       <TextInput
-        style={{
-          ...styles.input,
-          borderColor: onFocuss ? colors.darkgreen : colors.white,
-        }}
+        style={styles.input}
         value={searchText}
         onChangeText={handleSearch}
         onFocus={() => {
@@ -59,19 +56,22 @@ const PatientSearchBar = ({ state, onChange, label, onFocus, onBlur }) => {
         }}
       />
 
-      <View>
-        {suggestions.map((item) => (
-          <Button
-            key={item}
-            style={styles.suggestionItem}
-            onPress={() => {
-              handleSuggestionPress(item);
-            }}
-          >
-            <Text style={styles.suggestionText}>{item}</Text>
-          </Button>
-        ))}
-      </View>
+      <Button
+        style={styles.suggestionItem}
+        onPress={() => {
+          handleSuggestionPress("Banana");
+        }}
+      >
+        <Text style={styles.suggestionText}>Banana</Text>
+      </Button>
+      <Button
+        style={styles.suggestionItem}
+        onPress={() => {
+          handleSuggestionPress("Apple");
+        }}
+      >
+        <Text style={styles.suggestionText}>Apple</Text>
+      </Button>
     </View>
   );
 };
