@@ -56,22 +56,19 @@ const PatientSearchBar = ({ state, onChange, label, onFocus, onBlur }) => {
         }}
       />
 
-      <Button
-        style={styles.suggestionItem}
-        onPress={() => {
-          handleSuggestionPress("Banana");
-        }}
-      >
-        <Text style={styles.suggestionText}>Banana</Text>
-      </Button>
-      <Button
-        style={styles.suggestionItem}
-        onPress={() => {
-          handleSuggestionPress("Apple");
-        }}
-      >
-        <Text style={styles.suggestionText}>Apple</Text>
-      </Button>
+      <View>
+        {suggestions.map((item) => (
+          <Button
+            key={item}
+            style={styles.suggestionItem}
+            onPress={() => {
+              handleSuggestionPress(item);
+            }}
+          >
+            <Text style={styles.suggestionText}>{item}</Text>
+          </Button>
+        ))}
+      </View>
     </View>
   );
 };

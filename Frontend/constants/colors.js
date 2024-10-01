@@ -8,5 +8,6 @@ export default {
   black: "#000000",
   blue: "#5989E5",
   lightgray: "#eee",
+  prep: "#EC811B",
   grey: "#ddd",
 };
