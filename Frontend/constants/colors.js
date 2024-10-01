@@ -10,4 +10,5 @@ export default {
   lightgray: "#eee",
   prep: "#EC811B",
   grey: "#ddd",
+  darkgrey: "#999",
 };

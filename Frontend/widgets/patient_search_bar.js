@@ -4,9 +4,9 @@ import { View, StyleSheet, FlatList, ScrollView } from "react-native";
 import colors from "../constants/colors";
 import { Button, Text, TextInput } from "react-native-paper";
 
-const PatientSearchBar = ({ state, onChange, label, onFocus, onBlur }) => {
+const PatientSearchBar = ({}) => {
   const [onFocuss, setOnFocus] = useState(false);
-  const [searchText, setSearchText] = useState("search");
+  const [searchText, setSearchText] = useState("Search");
   const [suggestions, setSuggestions] = useState([]);
 
   const handleSearch = useCallback((val) => {
@@ -44,8 +44,15 @@ const PatientSearchBar = ({ state, onChange, label, onFocus, onBlur }) => {
     <View>
       <TextInput
         style={styles.input}
+        theme={{ roundness: 25 }}
         value={searchText}
+        mode="outlined"
+        selectionColor={colors.darkgreen}
+        cursorColor={colors.darkgreen}
+        activeOutlineColor={colors.darkgrey}
+        outlineColor={colors.grey}
         onChangeText={handleSearch}
+        right={<TextInput.Icon icon="magnify" />}
         onFocus={() => {
           if (suggestions.length > 0) {
             //inputRef.current.blur();
@@ -56,7 +63,12 @@ const PatientSearchBar = ({ state, onChange, label, onFocus, onBlur }) => {
         }}
       />
 
-      <View>
+      <View
+        style={{
+          ...styles.suggestionContainer,
+          padding: suggestions.length > 0 ? 5 : 0,
+        }}
+      >
         {suggestions.map((item) => (
           <Button
             key={item}
@@ -75,23 +87,19 @@ const PatientSearchBar = ({ state, onChange, label, onFocus, onBlur }) => {
 
 const styles = StyleSheet.create({
   input: {
-    backgroundColor: "white",
+    marginTop: 12,
+    marginBottom: 2,
+    backgroundColor: colors.white,
     color: colors.darkgreen,
   },
-  flatlist: {
-    marginVertical: 4,
-    borderColor: colors.darkgreen,
-    borderWidth: 0,
-    borderRadius: 5,
+  suggestionContainer: {
+    borderRadius: 25,
+    backgroundColor: colors.white,
   },
 
   suggestionItem: {
     alignItems: "flex-start",
     width: "100%",
-    backgroundColor: colors.white,
-    borderRadius: 5,
-    borderBottomWidth: 1,
-    borderColor: colors.darkgreen,
   },
   suggestionText: {
     paddingHorizontal: 10,

@@ -173,7 +173,14 @@ function Form({ location = null, navigation }) {
             onValueChange={setMachineID}
           />
         </View>
-        <View style={styles.row}>
+        <View style={styles.buttonsrow}>
+          <Button
+            style={styles.submitButton}
+            mode="contained"
+            onPress={onSubmit}
+          >
+            Submit
+          </Button>
           <Button
             style={styles.cancelButton}
             labelStyle={{ color: colors.black }}
@@ -181,13 +188,6 @@ function Form({ location = null, navigation }) {
             onPress={() => navigation.navigate("Dashboard")}
           >
             Cancel
-          </Button>
-          <Button
-            style={styles.submitButton}
-            mode="contained"
-            onPress={onSubmit}
-          >
-            Submit
           </Button>
         </View>
       </ScrollView>
@@ -197,7 +197,7 @@ function Form({ location = null, navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    paddingHorizontal: 20,
     backgroundColor: colors.background,
     height: "100%",
   },
@@ -208,13 +208,22 @@ const styles = StyleSheet.create({
   width20: {
     width: 20,
   },
+  buttonsrow: {
+    display: "flex",
+    flexDirection: "column",
+  },
   cancelButton: {
+    borderRadius: 25,
+    marginTop: 10,
     backgroundColor: colors.white,
     borderColor: colors.darkgreen,
+    padding: 5,
     borderWidth: 1,
-    marginRight: 10,
   },
   submitButton: {
+    borderRadius: 25,
+    padding: 5,
+    marginTop: 20,
     backgroundColor: colors.darkgreen,
   },
 });
