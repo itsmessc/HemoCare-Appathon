@@ -13,7 +13,10 @@ function Cards({ locationData, locationName }) {
   const occupied = locationData.filter(
     (machine) => machine.status === "Occupied"
   ).length;
-  const values = [0, vacant, occupied]; // Change the values here [Vacant - green, Preparing - blue, Occupied - red] instead of 3 1 4
+  const preparations=locationData.filter(
+    (machine)=>machine.status==='Preparing'
+  ).length;
+  const values = [preparations, vacant, occupied]; // Change the values here [Vacant - green, Preparing - blue, Occupied - red] instead of 3 1 4
   return (
     <View style={styles.card}>
       <Chart dimensions="100" values={values} />
@@ -32,6 +35,11 @@ function Cards({ locationData, locationName }) {
             <View style={[styles.square, { backgroundColor: colors.red }]} />
             <Text style={styles.normalText}>Occupied</Text>
             <Text style={styles.normalText}>{values[2]}</Text>
+          </View>
+          <View style={styles.row}>
+            <View style={[styles.square, { backgroundColor: colors.prep }]} />
+            <Text style={styles.normalText}>Preparing</Text>
+            <Text style={styles.normalText}>{values[0]}</Text>
           </View>
         </View>
       </View>

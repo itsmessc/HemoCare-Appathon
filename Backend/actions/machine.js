@@ -1,3 +1,4 @@
+const appointment = require('../models/appointment')
 const Machine=require('../models/machine')
 
 exports.addmachine = (req,res)=>{
@@ -36,4 +37,38 @@ exports.getmachines=async (req,res)=>{
       } catch (error) {
         res.json({"error":error})
       }
+}
+
+exports.startmachine = async (req,res)=>{
+    const msn = req.body.machine_id;
+    console.log("Helll"+msn);
+    
+    try{
+      const machine = await Machine.findById(msn);
+
+      if (machine) {
+        const duration = new Date(machine.end_time) - new Date(machine.start_time);
+      
+        const currentTime = new Date();
+        const endTime = new Date(currentTime.getTime() + duration);
+      
+        await Machine.findByIdAndUpdate(msn, {
+          status: 'Occupied',
+          start_time: currentTime,
+          end_time: endTime
+        }).exec();
+        await appointment.findByIdAndUpdate(machine.appointment_id, {
+          start_time: currentTime,
+          end_time: endTime
+        })
+        res.json({msg:"Started Successfully"});
+      } else {
+        console.log('Machine not found');
+      }
+      
+
+    } catch (error){
+      res.status(400).json({message:error.message})
+    }
+    
 }

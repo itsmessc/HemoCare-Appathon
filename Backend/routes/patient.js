@@ -1,8 +1,8 @@
 const express= require('express')
-const { addpatient } = require('../actions/patient')
+const { addpatient, getdetails } = require('../actions/patient')
 const router = express.Router()
 
  
 router.post('/newpatient',addpatient)
-
+router.get('/getdetails',getdetails)
 module.exports=router

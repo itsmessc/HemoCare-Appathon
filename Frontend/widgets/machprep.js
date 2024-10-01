@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity,Alert } from 'react-native';
 import moment from 'moment'; // Ensure you have moment.js installed
+import colors from '../constants/colors';
+import { ip } from '../constants/variables';
+import axios from 'axios';
 
-const MachineVacant = ({navigation, machine, reservations }) => {
+const MachinePrep = ({navigation, machine, reservations }) => {
   const [expanded, setExpanded] = useState(false);
 
   // Get current time
@@ -19,15 +22,12 @@ const MachineVacant = ({navigation, machine, reservations }) => {
     setExpanded(!expanded);
   };
 
-  const handleStart = (reservation) => {
-    // Implement start logic here
-    alert(`Starting appointment for Patient ID: ${reservation.patient_id}`);
-  };
+  
 
   const handleCancel = async (id) => {
     try {
         // Make a DELETE request to cancel the appointment
-        await axios.delete(`https://appathon-backend.onrender.com/appointment/cancelappointment/${id}`);
+        await axios.delete(`${ip}/appointment/cancelappointment/${id}`);
 
         // Show an alert after a successful cancellation
         Alert.alert('Cancel Appointment', `Appointment has been canceled successfully.`);
@@ -37,9 +37,19 @@ const MachineVacant = ({navigation, machine, reservations }) => {
         Alert.alert('Cancel Appointment', `Failed to cancel appointment with ID: ${id}. Please try again later.`);
     }
 };
-const onaddappoint = () => {
-  navigation.navigate("Form",{machine});
+const startmachine = async () => {
+    try{
+        console.log(machine._id+"Hell YEah");
+        
+        const response = await axios.post(`${ip}/machine/startmachine`,{machine_id:machine._id} );
+        console.log("MSN sent",response.data);
+    }
+    catch (error){
+        console.log("error",error);
+    }
 }
+
+
 
   return (
     <View style={styles.container}>
@@ -48,18 +58,21 @@ const onaddappoint = () => {
         <Text style={styles.statusText}>Status: {machine.status}</Text>
       </View>
       <View style={styles.actionsContainer}>
-        <TouchableOpacity style={styles.button} onPress={onaddappoint}>
-          <Text style={styles.buttonText}>Add Appointment</Text>
+        <TouchableOpacity style={styles.button} onPress={startmachine}>
+          <Text style={styles.buttonText}>start</Text>
         </TouchableOpacity>
-        {reservations.length > 0 && (
+        <TouchableOpacity style={[styles.button,{backgroundColor:"red"}]} onPress={()=>handleCancel(machine.appointment_id)}>
+          <Text style={styles.buttonText}>Cancel</Text>
+        </TouchableOpacity>
+        {/* {reservations.length > 0 && (
           <TouchableOpacity onPress={handleToggle} style={styles.reservationToggle}>
             <Text style={styles.reservationText}>
               {expanded ? 'Hide Reservations' : 'Show Reservations'}
             </Text>
           </TouchableOpacity>
-        )}
+        )} */}
       </View>
-      {expanded && reservations.length > 0 && (
+      {/* {expanded && reservations.length > 0 && (
         <View style={styles.reservationsContainer}>
           {sortedReservations.map((reservation, index) => {
             const startTime = moment(reservation.start_time);
@@ -84,7 +97,7 @@ const onaddappoint = () => {
             );
           })}
         </View>
-      )}
+      )} */}
     </View>
   );
 };
@@ -115,7 +128,7 @@ const styles = StyleSheet.create({
   },
   statusText: {
     fontSize: 14,
-    color: 'green',
+    color: colors.prep,
     fontWeight: 'bold',
   },
   actionsContainer: {
@@ -185,4 +198,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MachineVacant;
+export default MachinePrep;

@@ -19,3 +19,13 @@ exports.addpatient=(req,res)=>{
         res.status(400).json({message:err.message})
     })
 }
+
+exports.getdetails=(req,res)=>{
+    Patient.find()
+    .then((patients)=>{
+        res.status(200).json(patients)
+    })
+    .catch((err)=>{
+        res.status(400).json({message:err.message})
+    })
+} 
