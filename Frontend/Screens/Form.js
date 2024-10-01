@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, useLayoutEffect } from "react";
-import { Text, SafeAreaView, StyleSheet, View } from "react-native";
+import { Text, SafeAreaView, StyleSheet, View, ScrollView } from "react-native";
 import MyTextInput from "../widgets/textinput";
 import colors from "../constants/colors";
 import DateTimePickerComponent from "../widgets/datepicker";
@@ -10,7 +10,6 @@ import axios from "axios";
 import { ip } from "../constants/variables";
 import { useRoute } from "@react-navigation/native";
 import PatientSearchBar from "../widgets/patient_search_bar";
-import { ScrollView } from "react-native-web";
 
 function Form({ location = null, navigation }) {
   const route = useRoute();
@@ -108,71 +107,77 @@ function Form({ location = null, navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <PatientSearchBar />
-      <MyTextInput
-        label="Patient ID"
-        value={patientID}
-        onChange={setPatientID}
-      />
-      <DateTimePickerComponent
-        title="Select Date and Time"
-        dateTime={dateTime}
-        setDateTime={setDateTime}
-      />
-      <Text>Duration</Text>
-      <View style={styles.row}>
+      <ScrollView>
+        <PatientSearchBar />
         <MyTextInput
-          label="Hrs"
-          value={(hours ?? "").toString()}
-          onChange={(val) =>
-            setHours(isNaN(parseInt(val, 10)) ? null : parseInt(val, 10))
-          }
+          label="Patient ID"
+          value={patientID}
+          onChange={setPatientID}
         />
-        <View style={styles.width20} />
+        <DateTimePickerComponent
+          title="Select Date and Time"
+          dateTime={dateTime}
+          setDateTime={setDateTime}
+        />
+        <Text>Duration</Text>
+        <View style={styles.row}>
+          <MyTextInput
+            label="Hrs"
+            value={(hours ?? "").toString()}
+            onChange={(val) =>
+              setHours(isNaN(parseInt(val, 10)) ? null : parseInt(val, 10))
+            }
+          />
+          <View style={styles.width20} />
+          <MyTextInput
+            label="Mins"
+            value={(minutes ?? "").toString()}
+            onChange={(val) =>
+              setMinutes(isNaN(parseInt(val, 10)) ? null : parseInt(val, 10))
+            }
+          />
+        </View>
+        <Text>End Time: {new Date(endtime).toLocaleString()}</Text>
         <MyTextInput
-          label="Mins"
-          value={(minutes ?? "").toString()}
-          onChange={(val) =>
-            setMinutes(isNaN(parseInt(val, 10)) ? null : parseInt(val, 10))
-          }
+          label="Notes"
+          value={notes}
+          onChangeText={setNotes}
+          multiline
         />
-      </View>
-      <Text>End Time: {new Date(endtime).toLocaleString()}</Text>
-      <MyTextInput
-        label="Notes"
-        value={notes}
-        onChangeText={setNotes}
-        multiline
-      />
-      <View>
-        <Dropdown
-          label="Select location"
-          placeholder={{ label: "Select Location", value: null }}
-          options={locationOptions}
-          value={mac == "" ? locationID : mac.location}
-          onValueChange={setLocationID}
-        />
-        <Dropdown
-          label="Select Machine ID"
-          placeholder={{ label: "Select Machine", value: null }}
-          options={machineList}
-          value={mac == "" ? machineID : mac._id}
-          onValueChange={setMachineID}
-        />
-      </View>
-      <View style={styles.row}>
-        <Button
-          style={styles.cancelButton}
-          labelStyle={{ color: colors.black }}
-          mode="outlined"
-          onPress={() => navigation.navigate("Dashboard")}
-        >
-          Cancel
-        </Button>
-        <Button style={styles.submitButton} mode="contained" onPress={onSubmit}>
-          Submit
-        </Button>
-      </View>
+        <View>
+          <Dropdown
+            label="Select location"
+            placeholder={{ label: "Select Location", value: null }}
+            options={locationOptions}
+            value={mac == "" ? locationID : mac.location}
+            onValueChange={setLocationID}
+          />
+          <Dropdown
+            label="Select Machine ID"
+            placeholder={{ label: "Select Machine", value: null }}
+            options={machineList}
+            value={mac == "" ? machineID : mac._id}
+            onValueChange={setMachineID}
+          />
+        </View>
+        <View style={styles.row}>
+          <Button
+            style={styles.cancelButton}
+            labelStyle={{ color: colors.black }}
+            mode="outlined"
+            onPress={() => navigation.navigate("Dashboard")}
+          >
+            Cancel
+          </Button>
+          <Button
+            style={styles.submitButton}
+            mode="contained"
+            onPress={onSubmit}
+          >
+            Submit
+          </Button>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }

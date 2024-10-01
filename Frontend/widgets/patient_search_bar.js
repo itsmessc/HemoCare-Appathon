@@ -1,30 +1,38 @@
 import debounce from "lodash.debounce";
-import { useCallback, useState } from "react";
-import { View, StyleSheet, FlatList } from "react-native";
+import { useCallback, useRef, useState } from "react";
+import { View, StyleSheet, FlatList, ScrollView } from "react-native";
 import colors from "../constants/colors";
-import MyTextInput from "./textinput";
-import { Button, Text } from "react-native-paper";
+import { Button, Text, TextInput } from "react-native-paper";
 
 const PatientSearchBar = ({ state, onChange, label, onFocus, onBlur }) => {
   const [onFocuss, setOnFocus] = useState(false);
   const [searchText, setSearchText] = useState("search");
+  const [suggestions, setSuggestions] = useState([]);
+
+  const handleSearch = useCallback((val) => {
+    console.log("Searching for: handle", val);
+    setSearchText(val);
+    debouncedSearch(val);
+  }, []);
 
   const debouncedSearch = useCallback(
     debounce((text) => {
-      console.log("Searching for: ", text);
+      console.log("Searching for:", text);
+
+      // Implement your search logic here to
+
+      //fetch suggestions based on the text
+
+      // and set suggestions
     }, 500),
     []
   );
 
-  const suggestions = ["Sai Charan", "Banana", "Ayush", "Paliya"];
-
-  const handleSearch = (val) => {
-    if (val === "") {
-      setSearchText("search");
-      return;
-    }
-    setSearchText(val);
-    debouncedSearch(val);
+  const handleSuggestionPress = (suggestion) => {
+    console.log("Selected: ", suggestion);
+    setSearchText(suggestion);
+    setSuggestions([]);
+    handleSearch(suggestion);
   };
 
   const onTap = (item) => {
@@ -34,30 +42,36 @@ const PatientSearchBar = ({ state, onChange, label, onFocus, onBlur }) => {
 
   return (
     <View>
-      <MyTextInput
-        label={searchText}
-        state={searchText}
-        onChange={handleSearch}
-        iconName="magnify"
-        iconSize={20}
+      <TextInput
+        style={{
+          ...styles.input,
+          borderColor: onFocuss ? colors.darkgreen : colors.white,
+        }}
+        value={searchText}
+        onChangeText={handleSearch}
         onFocus={() => {
-          setOnFocus(true);
+          if (suggestions.length > 0) {
+            //inputRef.current.blur();
+            //inputRef.current.focus();
+          } else {
+            setSuggestions(["Sai Charan", "Banana", "Ayush", "Paliya"]);
+          }
         }}
       />
-      {suggestions.length > 0 && onFocuss ? (
-        <FlatList
-          style={styles.flatlist}
-          data={suggestions}
-          keyExtractor={(item) => item}
-          renderItem={({ item }) => (
-            <Button style={styles.suggestionItem} onPress={() => onTap(item)}>
-              <Text style={styles.suggestionText}>{item}</Text>
-            </Button>
-          )}
-        />
-      ) : (
-        <Text></Text>
-      )}
+
+      <View>
+        {suggestions.map((item) => (
+          <Button
+            key={item}
+            style={styles.suggestionItem}
+            onPress={() => {
+              handleSuggestionPress(item);
+            }}
+          >
+            <Text style={styles.suggestionText}>{item}</Text>
+          </Button>
+        ))}
+      </View>
     </View>
   );
 };
@@ -65,11 +79,12 @@ const PatientSearchBar = ({ state, onChange, label, onFocus, onBlur }) => {
 const styles = StyleSheet.create({
   input: {
     backgroundColor: "white",
+    color: colors.darkgreen,
   },
   flatlist: {
     marginVertical: 4,
     borderColor: colors.darkgreen,
-    borderWidth: 1,
+    borderWidth: 0,
     borderRadius: 5,
   },
 
@@ -80,6 +95,13 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderBottomWidth: 1,
     borderColor: colors.darkgreen,
+  },
+  suggestionText: {
+    paddingHorizontal: 10,
+    width: "100%",
+    display: "flex",
+    textAlign: "left",
+    alignContent: "flex-start",
   },
 });
 
