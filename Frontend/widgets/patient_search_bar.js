@@ -4,8 +4,9 @@ import { View, StyleSheet } from "react-native";
 import colors from "../constants/colors";
 import { Button, Text, TextInput } from "react-native-paper";
 
-const PatientSearchBar = ({ data, set }) => {
-  const [searchText, setSearchText] = useState("");
+const PatientSearchBar = ({ state, onChange, label, onFocus, onBlur }) => {
+  const [onFocuss, setOnFocus] = useState(false);
+  const [searchText, setSearchText] = useState("search");
   const [suggestions, setSuggestions] = useState([]);
 
   const handleSearch = useCallback((val) => {
@@ -44,24 +45,37 @@ const PatientSearchBar = ({ data, set }) => {
     <View style={styles.container}>
       <TextInput
         style={styles.input}
+        theme={{ roundness: 25 }}
         value={searchText}
+        mode="outlined"
+        selectionColor={colors.darkgreen}
+        cursorColor={colors.darkgreen}
+        activeOutlineColor={colors.darkgrey}
+        outlineColor={colors.grey}
         onChangeText={handleSearch}
-        placeholder="Search..."
+        onFocus={() => {
+          if (suggestions.length > 0) {
+            //inputRef.current.blur();
+            //inputRef.current.focus();
+          } else {
+            setSuggestions(["Sai Charan", "Banana", "Ayush", "Paliya"]);
+          }
+        }}
       />
 
-      {suggestions.length > 0 && (
-        <View style={styles.suggestionContainer}>
-          {suggestions.map((item) => (
-            <Button
-              key={item}
-              style={styles.suggestionItem}
-              onPress={() => handleSuggestionPress(item)}
-            >
-              <Text style={styles.suggestionText}>{item}</Text>
-            </Button>
-          ))}
-        </View>
-      )}
+      <View>
+        {suggestions.map((item) => (
+          <Button
+            key={item}
+            style={styles.suggestionItem}
+            onPress={() => {
+              handleSuggestionPress(item);
+            }}
+          >
+            <Text style={styles.suggestionText}>{item}</Text>
+          </Button>
+        ))}
+      </View>
     </View>
   );
 };
@@ -71,23 +85,21 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   input: {
-    backgroundColor: "white",
+    marginTop: 10,
+    height: 50,
+    marginBottom: 2,
+    backgroundColor: colors.white,
     color: colors.darkgreen,
   },
-  suggestionContainer: {
-    zIndex: 2,
-    position: 'absolute',
-    top: 50,
-    width: '100%',
-    backgroundColor: colors.white,
+  flatlist: {
+    marginVertical: 4,
+    borderColor: colors.darkgreen,
+    borderWidth: 0,
+    borderRadius: 5,
   },
   suggestionItem: {
     alignItems: "flex-start",
     width: "100%",
-    backgroundColor: colors.white,
-    borderRadius: 5,
-    borderBottomWidth: 1,
-    borderColor: colors.darkgreen,
   },
   suggestionText: {
     paddingHorizontal: 10,

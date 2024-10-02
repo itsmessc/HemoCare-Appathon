@@ -194,120 +194,91 @@
           dateTime={dateTime}
           setDateTime={setDateTime}
         />
-
-
-          <Text>Duration</Text>
-          <View style={styles.row}>
-            <MyTextInput
-              label="Hrs"
-              value={(hours ?? "").toString()}
-              onChange={(val) =>
-                setHours(isNaN(parseInt(val, 10)) ? null : parseInt(val, 10))
-              }
-            />
-            <View style={styles.width20} />
-            <MyTextInput
-              label="Mins"
-              value={(minutes ?? "").toString()}
-              onChange={(val) =>
-                setMinutes(isNaN(parseInt(val, 10)) ? null : parseInt(val, 10))
-              }
-            />
-          </View>
-          <Text>End Time: {new Date(endtime).toLocaleString()}</Text>
-
-          <View style={styles.row}>
-            <Text>Recurring for month:</Text>
-            <Switch
-              value={isRecurring}
-              onValueChange={() => setIsRecurring((prev) => !prev)}
-            />
-          </View>
-          {isRecurring && (
-            <View style={styles.checkboxContainer}>
-              {Object.keys(selectedDays).map((day) => (
-                <View key={day} style={styles.row}>
-                  <Switch
-                    value={selectedDays[day]}
-                    onValueChange={() => handleDayChange(day)}
-                  />
-                  <Text>{day}</Text>
-                </View>
-              ))}
-            </View>
-          )}
+        <Text>Duration</Text>
+        <View style={styles.row}>
           <MyTextInput
-            label="Notes"
-            value={notes}
-            onChangeText={setNotes}
-            multiline
+            label="Hrs"
+            value={(hours ?? "").toString()}
+            onChange={(val) =>
+              setHours(isNaN(parseInt(val, 10)) ? null : parseInt(val, 10))
+            }
           />
+          <View style={styles.width20} />
+          <MyTextInput
+            label="Mins"
+            value={(minutes ?? "").toString()}
+            onChange={(val) =>
+              setMinutes(isNaN(parseInt(val, 10)) ? null : parseInt(val, 10))
+            }
+          />
+        </View>
+        <Text>End Time: {new Date(endtime).toLocaleString()}</Text>
+        <MyTextInput
+          label="Notes"
+          value={notes}
+          onChangeText={setNotes}
+          multiline
+        />
+        <View>
+          <Dropdown
+            label="Select location"
+            placeholder={{ label: "Select Location", value: null }}
+            options={locationOptions}
+            value={mac == "" ? locationID : mac.location}
+            onValueChange={setLocationID}
+          />
+          <Dropdown
+            label="Select Machine ID"
+            placeholder={{ label: "Select Machine", value: null }}
+            options={machineList}
+            value={mac == "" ? machineID : mac._id}
+            onValueChange={setMachineID}
+          />
+        </View>
+        <View style={styles.row}>
+          <Button
+            style={styles.cancelButton}
+            labelStyle={{ color: colors.black }}
+            mode="outlined"
+            onPress={() => navigation.navigate("Dashboard")}
+          >
+            Cancel
+          </Button>
+          <Button
+            style={styles.submitButton}
+            mode="contained"
+            onPress={onSubmit}
+          >
+            Submit
+          </Button>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
 
-          <View>
-            <Dropdown
-              label="Select location"
-              placeholder={{ label: "Select Location", value: null }}
-              options={locationOptions}
-              value={mac == "" ? locationID : mac.location}
-              onValueChange={setLocationID}
-            />
-            <Dropdown
-              label="Select Machine ID"
-              placeholder={{ label: "Select Machine", value: null }}
-              options={machineList}
-              value={mac == "" ? machineID : mac._id}
-              onValueChange={setMachineID}
-            />
-          </View>
-          
-          <View style={styles.row}>
-            <Button
-              style={styles.cancelButton}
-              labelStyle={{ color: colors.black }}
-              mode="outlined"
-              onPress={() => navigation.navigate("Dashboard")}
-            >
-              Cancel
-            </Button>
-            <Button
-              style={styles.submitButton}
-              mode="contained"
-              onPress={onSubmit}
-            >
-              Submit
-            </Button>
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    );
-  }
-
-  const styles = StyleSheet.create({
-    container: {
-      padding: 20,
-      backgroundColor: colors.background,
-      height: "100%",
-    },
-    row: {
-      flexDirection: "row",
-      alignItems: "center",
-    },
-    width20: {
-      width: 20,
-    },
-    checkboxContainer: {
-      marginVertical: 10,
-      marginLeft: 10,
-    },
-    cancelButton: {
-      backgroundColor: colors.white,
-      borderColor: colors.darkgreen,
-      borderWidth: 1,
-      marginRight: 10,
-    },
-    submitButton: {
-      backgroundColor: colors.darkgreen,
-    },
-  });
+const styles = StyleSheet.create({
+  container: {
+    padding: 20,
+    backgroundColor: colors.background,
+    height: "100%",
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  width20: {
+    width: 20,
+  },
+  cancelButton: {
+    backgroundColor: colors.white,
+    borderColor: colors.darkgreen,
+    borderWidth: 1,
+    marginRight: 10,
+  },
+  submitButton: {
+    backgroundColor: colors.darkgreen,
+  },
+});
 
   export default Form;

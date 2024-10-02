@@ -47,6 +47,7 @@ const DateTimePickerComponent = ({ dateTime, setDateTime, title }) => {
       />
       {showDate && (
         <DateTimePicker
+          accentColor={colors.darkgreen}
           value={dateTime}
           mode="date"
           display="default"

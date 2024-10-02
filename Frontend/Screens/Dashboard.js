@@ -1,20 +1,33 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Text, View, StyleSheet, ScrollView, TouchableOpacity, TouchableHighlight } from "react-native";
+import {
+  Text,
+  View,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  TouchableHighlight,
+} from "react-native";
 import { Button, Appbar } from "react-native-paper";
 import { MachineContext } from "../MachineContext";
 import Cards from "./Cardss"; // Ensure the import matches your file name
 import { removeToken } from "../store";
+import colors from "../constants/colors";
 
 function Dashboard({ navigation }) {
-  const [data, setData] = useState({ total: 0, vacant: 0, occupied: 0, preparing:0 });
+  const [data, setData] = useState({
+    total: 0,
+    vacant: 0,
+    occupied: 0,
+    preparing: 0,
+  });
   const { machines } = useContext(MachineContext);
-  const machine=""
+  const machine = "";
 
   useEffect(() => {
     let total = 0;
     let vacant = 0;
     let occupied = 0;
-    let preparing=0
+    let preparing = 0;
     // Iterate over all locations and count total, vacant, and occupied machines
     Object.values(machines).forEach((locationMachines) => {
       locationMachines.forEach((machine) => {
@@ -26,14 +39,18 @@ function Dashboard({ navigation }) {
     });
 
     // Update the state with the calculated data
-    setData({ total, vacant, occupied,preparing });
+    setData({ total, vacant, occupied, preparing });
   }, [machines]); // Add machines as a dependency so that this effect runs when machines change
 
   // Prepare the entries, sort by the number of vacant machines, then map
-  const sortedEntries = Object.entries(machines).map(([location, locationData]) => {
-    const vacantCount = locationData.filter(machine => machine.status === "Vacant").length;
-    return { location, locationData, vacantCount };
-  }).sort((a, b) => b.vacantCount - a.vacantCount); // Sort in descending order
+  const sortedEntries = Object.entries(machines)
+    .map(([location, locationData]) => {
+      const vacantCount = locationData.filter(
+        (machine) => machine.status === "Vacant"
+      ).length;
+      return { location, locationData, vacantCount };
+    })
+    .sort((a, b) => b.vacantCount - a.vacantCount); // Sort in descending order
 
   const handleLogout = () => {
     removeToken();
@@ -46,9 +63,16 @@ function Dashboard({ navigation }) {
   return (
     <View style={styles.areaview}>
       {/* AppBar with Logout Button */}
-      <Appbar.Header>
-        <Appbar.Content title="Dashboard" />
-        <Appbar.Action icon="logout" onPress={handleLogout} />
+      <Appbar.Header style={styles.appbars}>
+        <Appbar.Content
+          title="Dashboard"
+          titleStyle={{ color: colors.white }}
+        />
+        <Appbar.Action
+          icon="logout"
+          onPress={handleLogout}
+          color={colors.white}
+        />
       </Appbar.Header>
 
       <View style={styles.container}>
@@ -71,7 +95,7 @@ function Dashboard({ navigation }) {
             style={[
               styles.boxeinside,
               {
-                backgroundColor: "#3E9837",
+                backgroundColor: colors.green,
                 width: 75,
                 height: 75,
               },
@@ -113,7 +137,7 @@ function Dashboard({ navigation }) {
           <Button
             style={styles.button}
             mode="contained"
-            onPress={() => navigation.navigate("Form",machine)}
+            onPress={() => navigation.navigate("Form", machine)}
           >
             Book Appointment
           </Button>
@@ -124,7 +148,9 @@ function Dashboard({ navigation }) {
           {sortedEntries.map(({ location, locationData }) => (
             <TouchableHighlight
               key={location}
-              onPress={() => navigation.navigate("Location", { navigation, location })}
+              onPress={() =>
+                navigation.navigate("Location", { navigation, location })
+              }
               underlayColor="#FFFFFF"
             >
               <Cards locationName={location} locationData={locationData} />
@@ -143,15 +169,15 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: "#E1E1E1",
+    backgroundColor: colors.background,
     alignItems: "center",
     flexDirection: "column",
     justifyContent: "center",
-    color: "white",
+    color: colors.white,
     gap: 15,
     padding: 10,
     width: "100%",
-    backgroundColor: "white"
+    backgroundColor: colors.white,
   },
   boxeinside: {
     borderRadius: 8,
@@ -160,7 +186,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   texts: {
-    color: "white",
+    color: colors.white,
     fontSize: 15,
     fontWeight: "bold",
     textAlign: "center",
@@ -179,14 +205,18 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: "#22895D",
-    color: "white",
+    color: colors.white,
     width: "100%",
     padding: 10,
-    fontSize: 18
+    fontSize: 18,
   },
   cardsContainer: {
     width: "100%",
     flexGrow: 1, // Ensure the container grows to fit its content
+  },
+  appbars: {
+    backgroundColor: colors.darkgreen,
+    color: colors.white,
   },
 });
 
