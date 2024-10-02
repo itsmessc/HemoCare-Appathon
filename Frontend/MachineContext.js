@@ -13,7 +13,7 @@ export const MachineProvider = ({ children }) => {
   const [machines, setMachines] = useState({});
   const [appointments, setAppointments] = useState({});
   const [availableLocations, setLocations] = useState([]);
-
+  const [patients,setpatients]=useState([]);
   // Fetch initial machine data from the backend
   const fetchMachineData = async () => {
     try {
@@ -36,12 +36,22 @@ export const MachineProvider = ({ children }) => {
       console.error("Error fetching appointment data:", error);
     }
   };
+  const fetchPatientDetails = async () =>{
+    try{
+      const response= await fetch(`${ip}/patient/getdetails`);
+      const data = await response.json();
+      setpatients(data);
 
+    } catch(error){
+      console.error("Error fetching patient data:",error);
+    }
+    
+  }
   useEffect(() => {
     // Fetch data once the component mounts
     fetchMachineData();
     fetchAppointmentData();
-
+    fetchPatientDetails();
     // WebSocket connection for receiving machine updates
     socket.on("connect", () => {
       console.log("Connected to WebSocket server");
@@ -95,7 +105,7 @@ export const MachineProvider = ({ children }) => {
   }, []);
 
   return (
-    <MachineContext.Provider value={{ machines, appointments, availableLocations ,setMachines}}>
+    <MachineContext.Provider value={{ machines, appointments, availableLocations ,setMachines,patients}}>
       {children}
     </MachineContext.Provider>
   );

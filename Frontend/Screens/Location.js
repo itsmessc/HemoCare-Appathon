@@ -121,7 +121,7 @@ const Location = ({ navigation }) => {
                   machine={item}
                   reservations={appointments.filter(
                     (appointment) => appointment.machine_id === item._id
-                  )}
+                  ).filter((app)=>app.type=='Reservation')}
                 />
             ):(
               <MachinePrep

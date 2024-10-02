@@ -1,90 +1,86 @@
 import debounce from "lodash.debounce";
-import { useCallback, useRef, useState } from "react";
-import { View, StyleSheet, FlatList, ScrollView } from "react-native";
+import { useCallback, useState } from "react";
+import { View, StyleSheet } from "react-native";
 import colors from "../constants/colors";
 import { Button, Text, TextInput } from "react-native-paper";
 
-const PatientSearchBar = ({ state, onChange, label, onFocus, onBlur }) => {
-  const [onFocuss, setOnFocus] = useState(false);
-  const [searchText, setSearchText] = useState("search");
+const PatientSearchBar = ({ data, set }) => {
+  const [searchText, setSearchText] = useState("");
   const [suggestions, setSuggestions] = useState([]);
 
   const handleSearch = useCallback((val) => {
-    console.log("Searching for: handle", val);
     setSearchText(val);
     debouncedSearch(val);
   }, []);
 
   const debouncedSearch = useCallback(
     debounce((text) => {
-      console.log("Searching for:", text);
-
-      // Implement your search logic here to
-
-      //fetch suggestions based on the text
-
-      // and set suggestions
-    }, 500),
-    []
+      if (text) {
+        const filteredSuggestions = data
+          .filter((item) =>
+            item.name.toLowerCase().includes(text.toLowerCase()) ||
+            item.patient_id.toString().includes(text) // Convert patient_id to string and check
+          )
+          .map((item) => `${item.name}-${item.patient_id}`); // Format suggestions
+        setSuggestions(filteredSuggestions);
+      } else {
+        setSuggestions([]);
+      }
+    }, 100), // Ensure the closing parenthesis is here
+    [data] // Dependency array should be outside the debounce function
   );
+  
 
   const handleSuggestionPress = (suggestion) => {
-    console.log("Selected: ", suggestion);
-    setSearchText(suggestion);
-    setSuggestions([]);
-    handleSearch(suggestion);
-  };
+    const [name, patientId] = suggestion.split('-'); // Split the suggestion to get patient_id
+    setSearchText(suggestion); // Set the input to the patient's name
+    set(patientId.trim()); // Send the patient_id to the set function
+    setSuggestions([]); // Clear suggestions
+    console.log("Selected patient_id: ", patientId);
+};
 
-  const onTap = (item) => {
-    console.log("Selected: ", item);
-    setSearchText(item);
-  };
 
   return (
-    <View>
+    <View style={styles.container}>
       <TextInput
         style={styles.input}
         value={searchText}
         onChangeText={handleSearch}
-        onFocus={() => {
-          if (suggestions.length > 0) {
-            //inputRef.current.blur();
-            //inputRef.current.focus();
-          } else {
-            setSuggestions(["Sai Charan", "Banana", "Ayush", "Paliya"]);
-          }
-        }}
+        placeholder="Search..."
       />
 
-      <View>
-        {suggestions.map((item) => (
-          <Button
-            key={item}
-            style={styles.suggestionItem}
-            onPress={() => {
-              handleSuggestionPress(item);
-            }}
-          >
-            <Text style={styles.suggestionText}>{item}</Text>
-          </Button>
-        ))}
-      </View>
+      {suggestions.length > 0 && (
+        <View style={styles.suggestionContainer}>
+          {suggestions.map((item) => (
+            <Button
+              key={item}
+              style={styles.suggestionItem}
+              onPress={() => handleSuggestionPress(item)}
+            >
+              <Text style={styles.suggestionText}>{item}</Text>
+            </Button>
+          ))}
+        </View>
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    position: 'relative',
+  },
   input: {
     backgroundColor: "white",
     color: colors.darkgreen,
   },
-  flatlist: {
-    marginVertical: 4,
-    borderColor: colors.darkgreen,
-    borderWidth: 0,
-    borderRadius: 5,
+  suggestionContainer: {
+    zIndex: 2,
+    position: 'absolute',
+    top: 50,
+    width: '100%',
+    backgroundColor: colors.white,
   },
-
   suggestionItem: {
     alignItems: "flex-start",
     width: "100%",
@@ -96,9 +92,7 @@ const styles = StyleSheet.create({
   suggestionText: {
     paddingHorizontal: 10,
     width: "100%",
-    display: "flex",
     textAlign: "left",
-    alignContent: "flex-start",
   },
 });
 

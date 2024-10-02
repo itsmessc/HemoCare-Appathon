@@ -105,12 +105,8 @@ Appointments.watch().on("change", async (change) => {
       const appointment = await Appointments.findById(change.documentKey._id);
       console.log("Tet" + appointment);
       if (appointment) {
-        if (appointment.type === "Reservation") {
-          io.emit("appointmentreservation", appointment);
-          console.log("Appointment reservation updated:", appointment);
-        } else {
-          console.log("Other appointment type or status:", appointment);
-        }
+        io.emit("appointmentreservation", appointment);
+        console.log("Appointment reservation updated:", appointment);
       } else {
         console.error("Appointment not found for ID:", change.documentKey._id);
       }

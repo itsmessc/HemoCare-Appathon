@@ -4,6 +4,8 @@ const cron = require('node-cron');
 
 exports.addappointment = async (req, res) => {
     try {
+      console.log(req.body);
+      
       // Create the appointment
       const appointment = await Appointment.create({
         patient_id: req.body.patient_id,
