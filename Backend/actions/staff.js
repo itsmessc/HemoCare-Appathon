@@ -3,9 +3,13 @@ const jwt=require('jsonwebtoken');
 
 const JWT_SECRET_KEY = 'AYUAYU'; 
 
-exports.addstaff = (req, res) => {
+exports.addstaff = async (req, res) => {
     console.log(req.body);
-
+    const existstaf=await staff.findOne({ phone:req.body.phone });
+    if(existstaf){
+        res.status(201).json({message: 'Phone number already exists'});
+        return;
+    }
     staff.create({
         name: req.body.name,
         position: req.body.position,
@@ -21,7 +25,7 @@ exports.addstaff = (req, res) => {
         const token = jwt.sign(payload, JWT_SECRET_KEY, { expiresIn: '10d' });
 
         
-        res.json({
+        res.status(200).json({
             status: staff.name + ' registered',
             token: token
         });

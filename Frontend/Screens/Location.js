@@ -121,7 +121,13 @@ const Location = ({ navigation }) => {
                   machine={item}
                   reservations={appointments.filter(
                     (appointment) => appointment.machine_id === item._id
-                  ).filter((app)=>app.type=='Reservation')}
+                  ).filter((app)=>app.type=='Reservation').filter((app)=>{
+                    const today = new Date();
+                    const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+                    const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+                    const appointmentDate = new Date(app.start_time);
+                    return appointmentDate >= startOfDay && appointmentDate <= endOfDay;
+                  })}
                 />
             ):(
               <MachinePrep

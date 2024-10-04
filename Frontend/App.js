@@ -9,6 +9,7 @@ import { MachineProvider } from "./MachineContext";
 import Location from "./Screens/Location";
 import BottomTabNavigator from "./widgets/navigation";
 import Login from "./Screens/Login";
+import Register from "./Screens/Signup";
 
 const Stack = createNativeStackNavigator();
 
@@ -18,6 +19,7 @@ export default function App({}) {
       <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
           <Stack.Screen name="Login" component={Login} options={{headerShown:false}}/>
+          <Stack.Screen name="Signup" component={Register} options={{headerShown:false}}/>
           <Stack.Screen name="Tabs" component={BottomTabNavigator} options={{headerShown:false}}/>
           <Stack.Screen name="Form" component={Form} />
           <Stack.Screen name="Location" component={Location} />

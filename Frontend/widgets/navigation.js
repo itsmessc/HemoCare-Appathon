@@ -6,6 +6,7 @@ import Chat from "../Screens/Chat";
 import { Ionicons } from "react-native-vector-icons"; // Import the icon library
 import Reservations from "../Screens/Reservations";
 import colors from "../constants/colors";
+import DemoScreen from "../Screens/DemoScreen";
 
 const Tab = createBottomTabNavigator();
 

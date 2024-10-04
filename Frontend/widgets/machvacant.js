@@ -27,7 +27,7 @@ const MachineVacant = ({navigation, machine, reservations }) => {
   const handleCancel = async (id) => {
     try {
         // Make a DELETE request to cancel the appointment
-        await axios.delete(`https://appathon-backend.onrender.com/appointment/cancelappointment/${id}`);
+        await axios.delete(`${ip}/appointment/cancelappointment/${id}`);
 
         // Show an alert after a successful cancellation
         Alert.alert('Cancel Appointment', `Appointment has been canceled successfully.`);
