@@ -11,4 +11,5 @@ export default {
   prep: "#EC811B",
   grey: "#ddd",
   darkgrey: "#999",
+  lightblue: "#B5D2FF",
 };
