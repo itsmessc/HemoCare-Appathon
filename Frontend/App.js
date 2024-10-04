@@ -9,6 +9,7 @@ import { MachineProvider } from "./MachineContext";
 import Location from "./Screens/Location";
 import BottomTabNavigator from "./widgets/navigation";
 import Login from "./Screens/Login";
+import Register from "./Screens/Signup";
 
 const Stack = createNativeStackNavigator();
 
