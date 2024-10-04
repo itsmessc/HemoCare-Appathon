@@ -9,6 +9,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Platform,
+  Text
 } from "react-native";
 import { Button } from "react-native-paper";
 import axios from "axios";
@@ -16,10 +17,11 @@ import colors from "../constants/colors";
 import MyTextInput from "../widgets/textinput";
 import { getToken, storeToken } from "../store";
 import { ip } from "../constants/variables";
-
+import PasswordInput from "../widgets/passwordinput";
 function Login({ navigation }) {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     const checkToken = async () => {
@@ -40,6 +42,11 @@ function Login({ navigation }) {
   }, []);
 
   const handleSubmit = async () => {
+    const phoneRegex = /^[0-9]{10}$/; // Adjust this regex as per your requirements (e.g., for 10-digit numbers)
+    if (!phoneRegex.test(phone)) {
+      Alert.alert("Invalid Phone Number", "Please enter a valid 10-digit phone number.");
+      return;
+    }
     try {
       const response = await axios.post(`${ip}/staff/login`, {
         phone,
@@ -89,13 +96,23 @@ function Login({ navigation }) {
           </View>
 
           <MyTextInput label="Phone Number" state={phone} onChange={setPhone} />
-          <MyTextInput
+          <PasswordInput
             label="Password"
-            state={password}
+            value={password}
             onChange={setPassword}
-            secureTextEntry
+            secureTextEntry={!showPassword}
+            onTogglePassword={() => setShowPassword(!showPassword)}
           />
-
+          <View style={styles.container1}>
+      <Text style={styles.text1}>New User, </Text>
+      <Button
+        style={styles.regbutton}
+        mode="text" // Use text mode for a hyperlink look
+        onPress={() => navigation.navigate("Signup")}
+      >
+        <Text style={styles.linkText}>Register</Text>
+      </Button>
+    </View>
           <View style={{ width: "100%" }}>
             <Button
               style={styles.button}
@@ -105,6 +122,7 @@ function Login({ navigation }) {
               Login
             </Button>
           </View>
+          
         </ScrollView>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
@@ -124,8 +142,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#22895D",
     color: "white",
     width: "100%",
-    padding: 10,
+    padding: 5,
     fontSize: 18,
+    borderRadius:5,
+    
   },
   logo: {
     width: 130,
@@ -147,6 +167,23 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
     alignSelf: "center",
     marginTop: -30,
+  },
+  container1: {
+    flexDirection: 'row', // Align items in a row
+    alignItems: 'center',
+    justifyContent:'center',
+    marginTop: -10,
+  },
+  text1: {
+    fontSize: 16,         // Set the font size
+  },
+  regbutton: {
+    padding: 0,           // Remove padding for text button
+  },
+  linkText: {
+    color: 'blue',        // Blue color for the link
+    textDecorationLine: 'underline', // Underline the text
+    fontSize: 16,         // Match font size with the text
   },
 });
 

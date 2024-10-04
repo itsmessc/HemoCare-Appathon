@@ -98,19 +98,40 @@ function Form({ location = null, navigation }) {
       alert("Please fill out all required fields.");
       return;
     }
-
+  
     const duration = `${hours || 0}.${minutes || 0}`;
-    const endTime = new Date(dateTime);
+    const startTime = new Date(dateTime);
+    const endTime = new Date(startTime);
     if (hours) endTime.setHours(endTime.getHours() + hours);
     if (minutes) endTime.setMinutes(endTime.getMinutes() + minutes);
-
-    // Buffer times logic...
-
+  
+    // Buffer times
+    const bufferTime = 60 * 60 * 1000; // 1 hour in milliseconds
+    const bufferedStartTime = new Date(startTime.getTime() - bufferTime);
+    const bufferedEndTime = new Date(endTime.getTime() + bufferTime);
+  
+    // Step 2: Check for conflicts in existing appointments
+    const conflicts = appointments.filter(appointment => 
+      appointment.machine_id === machineID &&
+      new Date(appointment.start_time) < bufferedEndTime &&
+      new Date(appointment.end_time) > bufferedStartTime
+    );
+  
+    if (conflicts.length > 0) {
+      // Step 3: Show an alert with details of the conflicting appointments
+      const conflictDetails = conflicts.map(app => 
+        `ID: ${app._id}, Patient: ${app.patient_id}, Start: ${new Date(app.start_time).toLocaleString()}, End: ${new Date(app.end_time).toLocaleString()}`
+      ).join('\n');
+      alert(`Conflicting Appointments:\n${conflictDetails}`);
+      return; // Stop submission
+    }
+  
+    // Step 4: If no conflicts, proceed to submit the appointment
     try {
-      const response = await axios.post(`${ip}/appointment/addappointment`, {
+      await axios.post(`${ip}/appointment/addappointment`, {
         patient_id: patientID,
         machine_id: machineID,
-        start_time: dateTime.toISOString(),
+        start_time: startTime.toISOString(),
         end_time: endTime.toISOString(),
         duration,
         type: isReservation ? "Reservation" : "Regular",
@@ -119,13 +140,15 @@ function Form({ location = null, navigation }) {
           days: Object.keys(selectedDays).filter(day => selectedDays[day])
         }
       });
-
+  
       alert("Appointment added successfully");
       navigation.navigate("Dashboard");
     } catch (error) {
       console.error("Error submitting appointment:", error);
+      alert("Error submitting appointment. Please try again.");
     }
   }
+  
 
   const handleDayChange = (day) => {
     setSelectedDays((prev) => ({ ...prev, [day]: !prev[day] }));

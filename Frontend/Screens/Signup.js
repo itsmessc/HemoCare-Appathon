@@ -9,14 +9,14 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Platform,
-  TouchableOpacity,
   Text,
 } from "react-native";
 import { Button } from "react-native-paper";
 import axios from "axios";
 import colors from "../constants/colors";
-import MyTextInput from "../widgets/textinput"; // Ensure this component can accept props for visibility toggle
+import PasswordInput from "../widgets/passwordinput";
 import { ip } from "../constants/variables";
+import MyTextInput from "../widgets/textinput";
 
 function Register({ navigation }) {
   const [name, setName] = useState("");
@@ -29,24 +29,40 @@ function Register({ navigation }) {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleSubmit = async () => {
+    // Phone number validation using regex
+    const phoneRegex = /^[0-9]{10}$/; // Adjust this regex as per your requirements (e.g., for 10-digit numbers)
+    if (!phoneRegex.test(phone)) {
+      Alert.alert("Invalid Phone Number", "Please enter a valid 10-digit phone number.");
+      return;
+    }
+
     if (password !== confirmPassword) {
       Alert.alert("Passwords do not match", "Please make sure both passwords match.");
       return;
     }
 
     try {
-      const response = await axios.post(`${ip}/staff/register`, {
+      const response = await axios.post(`${ip}/staff/addstaff`, {
         name,
         position,
         phone,
         blood_group: bloodGroup,
         password,
       });
-
+      if (response.status==201){
+        Alert.alert("Existing User", "You have already registered, Login to continue");
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Login" }],
+        });
+      }
       // Handle success
-      if (response.status === 201) {
+      else if (response.status === 200) {
         Alert.alert("Registration Successful", "You have registered successfully");
-        navigation.navigate("Login"); // Navigate to login page after registration
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Tabs" }],
+        });
       }
     } catch (error) {
       console.error("Registration failed:", error);
@@ -74,28 +90,31 @@ function Register({ navigation }) {
           <MyTextInput label="Phone Number" state={phone} onChange={setPhone} />
           <MyTextInput label="Blood Group" state={bloodGroup} onChange={setBloodGroup} />
 
-          <View style={styles.passwordContainer}>
-            <MyTextInput
-              label="Password"
-              state={password}
-              onChange={setPassword}
-              secureTextEntry={!showPassword}
-            />
-            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-              <Text style={styles.toggleText}>{showPassword ? "Hide" : "Show"}</Text>
-            </TouchableOpacity>
-          </View>
+          <PasswordInput
+            label="Password"
+            value={password}
+            onChange={setPassword}
+            secureTextEntry={!showPassword}
+            onTogglePassword={() => setShowPassword(!showPassword)}
+          />
 
-          <View style={styles.passwordContainer}>
-            <MyTextInput
-              label="Re-enter Password"
-              state={confirmPassword}
-              onChange={setConfirmPassword}
-              secureTextEntry={!showConfirmPassword}
-            />
-            <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
-              <Text style={styles.toggleText}>{showConfirmPassword ? "Hide" : "Show"}</Text>
-            </TouchableOpacity>
+          <PasswordInput
+            label="Re-enter Password"
+            value={confirmPassword}
+            onChange={setConfirmPassword}
+            secureTextEntry={!showConfirmPassword}
+            onTogglePassword={() => setShowConfirmPassword(!showConfirmPassword)}
+          />
+
+          <View style={styles.container1}>
+            <Text style={styles.text1}>Existing User, </Text>
+            <Button
+              style={styles.regbutton}
+              mode="text"
+              onPress={() => navigation.navigate("Login")}
+            >
+              <Text style={styles.linkText}>Login</Text>
+            </Button>
           </View>
 
           <View style={styles.buttonContainer}>
@@ -127,27 +146,6 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginVertical: 20,
   },
-  imageContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginVertical: 20,
-    alignItems: "center",
-  },
-  additionalImage: {
-    width: 100,
-    height: 100,
-    resizeMode: "contain",
-  },
-  passwordContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 15,
-  },
-  toggleText: {
-    color: "#22895D",
-    fontSize: 16,
-  },
   buttonContainer: {
     width: "100%",
     marginTop: 20,
@@ -155,8 +153,26 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: "#22895D",
     width: "100%",
-    paddingVertical: 12,
+    paddingVertical: 5,
     borderRadius: 8,
+    marginTop: -15,
+  },
+  container1: {
+    flexDirection: 'row', // Align items in a row
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: -10,
+  },
+  text1: {
+    fontSize: 16, // Set the font size
+  },
+  regbutton: {
+    padding: 0, // Remove padding for text button
+  },
+  linkText: {
+    color: 'blue', // Blue color for the link
+    textDecorationLine: 'underline', // Underline the text
+    fontSize: 16, // Match font size with the text
   },
 });
 

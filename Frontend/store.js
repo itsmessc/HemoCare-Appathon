@@ -38,6 +38,7 @@ export const getlocation = async () => {
 export const removeToken = async () => {
     try {
         await AsyncStorage.removeItem('@userToken');
+        await AsyncStorage.removeItem('@location');
     } catch (error) {
         console.error('Failed to remove the token:', error);
     }
