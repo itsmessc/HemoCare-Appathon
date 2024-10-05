@@ -18,7 +18,8 @@ const AppointmentSchema = new mongoose.Schema({
   machine_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Machine', required: true },
   notes: { type: String },
   type:{type:String,enum:["Reservation","Regular"]},
-  staff_id:{type:String}
+  staff_id:{type:String},
+  notified:{type:String}
 },{timestamps:true});
 
 module.exports = mongoose.model('Appointment', AppointmentSchema);

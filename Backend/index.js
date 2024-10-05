@@ -3,10 +3,11 @@ const http = require("http");
 const socketIo = require("socket.io");
 const cors = require("cors");
 const mongoose = require("mongoose");
-
+const OneSignal = require('onesignal-node');
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, { cors: { origin: "*" } });
+const client = new OneSignal.Client('25d4fd08-24db-4109-8f17-440d23a9a89e','NDcxNjFlZjktOWU2OS00NjIxLTgxZDAtNjhkMDMxMzJkNThm');
 
 const port = 7878;
 
@@ -33,6 +34,25 @@ app.use("/patient", patientrouter);
 app.use("/staff", staffroute);
 app.use("/appointment", appointmentroute);
 app.use("/machine", machine);
+app.post('/send-to-all', async (req, res) => {
+  console.log("FUck you");
+  
+  const notification = {
+    app_id: '25d4fd08-24db-4109-8f17-440d23a9a89e', // Your OneSignal App ID
+    contents: { en: "Hello from OneSignal!" }, // Notification message
+    included_segments: ["All"], // Send to all users
+    headings: { en: "MIC testing Notification" }, // Notification title
+  };
+
+  try {
+    const response = await client.createNotification(notification);
+    console.log('Notification sent successfully to all users:', response);
+    return res.status(200).json({ success: true, response });
+  } catch (error) {
+    console.error('Error sending notification to all users:', error);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+});
 
 const Chatbox = require("./models/chatbox");
 const Machine = require("./models/machine");

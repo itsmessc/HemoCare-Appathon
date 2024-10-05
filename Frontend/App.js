@@ -10,10 +10,43 @@ import Location from "./Screens/Location";
 import BottomTabNavigator from "./widgets/navigation";
 import Login from "./Screens/Login";
 import Register from "./Screens/Signup";
-
+import { OneSignal } from 'react-native-onesignal';
+import axios from "axios";
+import { ip } from "./constants/variables.js";
 const Stack = createNativeStackNavigator();
 
+
+
+
 export default function App({}) {
+
+  useEffect(() => {
+    // OneSignal Initialization
+    OneSignal.initialize('25d4fd08-24db-4109-8f17-440d23a9a89e'); // Replace with your OneSignal App ID
+
+    // Request permission for notifications
+    OneSignal.Notifications.requestPermission(true);
+
+    // Fetch Player ID when the device is registered
+    OneSignal.User.getOnesignalId().then(userId => {
+      if (userId) {
+        setPlayerId(userId);
+        console.log('OneSignal Player ID:', userId);
+      } else {
+        console.error("User ID not found. User may not be subscribed.");
+      }
+    });
+    // axios.post(`${ip}/send-to-all`);
+
+    // Handle notification opened
+    OneSignal.Notifications.addEventListener('click', (event) => {
+      console.log('OneSignal: notification clicked:', event);
+    });
+
+    
+  }, []);
+
+
   return (
     <MachineProvider>
       <NavigationContainer>

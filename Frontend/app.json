@@ -12,7 +12,8 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.mighty.hemocare"
     },
     "android": {
       "adaptiveIcon": {
@@ -30,9 +31,16 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "onesignal-expo-plugin",
+        {
+          "mode": "development"
+        }
+      ]
     ],
     "extra": {
+      "oneSignalAppId": "11fcff57-a8a6-4fd3-a5b5-2b40480b2d74",
       "eas": {
         "projectId": "b0b0333f-64c1-4f0f-b5ff-8a0264a13954"
       }

@@ -1,6 +1,8 @@
 const Appointment = require('../models/appointment.js');
 const Machine = require('../models/machine.js')
 const cron = require('node-cron');
+const OneSignal = require('onesignal-node');
+const client = new OneSignal.Client('25d4fd08-24db-4109-8f17-440d23a9a89e','NDcxNjFlZjktOWU2OS00NjIxLTgxZDAtNjhkMDMxMzJkNThm');
 
 function dayIndex(day) {
   const days = {
@@ -163,9 +165,28 @@ exports.cancelappointment=async (req,res)=>{
     
 }
 
+async function sendnoti (head,content){
+  const notification = {
+    app_id: '25d4fd08-24db-4109-8f17-440d23a9a89e', // Your OneSignal App ID
+    contents: { en: content }, // Notification message
+    included_segments: ["All"], // Send to all users
+    headings: { en: head }, // Notification title
+  };
+
+  try {
+    const response = await client.createNotification(notification);
+    console.log('Notification sent successfully to all users:', response);
+    // return res.status(200).json({ success: true, response });
+  } catch (error) {
+    console.error('Error sending notification to all users:', error);
+    // return res.status(500).json({ success: false, error: error.message });
+  }
+}
 
 cron.schedule('*/1 * * * *', async () => {
   console.log('hello');
+  
+  
   
     try {
         const machines = await Machine.find({
@@ -200,6 +221,29 @@ cron.schedule('*/1 * * * *', async () => {
             });
           }
         }
+
+        
+        const currentTime = new Date();
+        const fifteenMinutesAgo = new Date(currentTime.getTime() + 15 * 60000); // 15 minutes ago
+        const thirteenMinutesAgo = new Date(currentTime.getTime() + 13 * 60000); // 13 minutes ago
+        
+        const appointments = await Appointment.find({
+          end_time: {
+            $lte: fifteenMinutesAgo,
+            $gte: thirteenMinutesAgo
+          },
+          notified:null
+        });
+        if(appointments){
+          for(const ap of appointments){
+            const machine = await Machine.findById(ap.machine_id);
+            cont='PatientId:'+ap.patient_id+'\nLocation:'+machine.location+'\nMSN:'+machine.manufacturing_serial_number;
+            head='Time Alert: 15min left';
+            sendnoti(head,cont)
+            await Appointment.findByIdAndUpdate(ap._id, { notified:'True'});
+          }
+        }
+
         
     } catch (error) {
         console.error('Error running cron job:', error);
