@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "ReMarket",
-    "slug": "ReMarket",
+    "slug": "hemocare-cp8b6a9jcqcp0k-mlvl38",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -34,8 +34,9 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "2b383835-6cb1-48a6-854b-bc5f4d2f4bd7"
+        "projectId": "b0b0333f-64c1-4f0f-b5ff-8a0264a13954"
       }
-    }
+    },
+    "owner": "ayush747"
   }
 }
