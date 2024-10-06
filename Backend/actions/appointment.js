@@ -1,3 +1,4 @@
+const appointment = require('../models/appointment.js');
 const Appointment = require('../models/appointment.js');
 const Machine = require('../models/machine.js')
 const cron = require('node-cron');
@@ -140,7 +141,35 @@ exports.getappointments = async (req,res)=>{
 
 }
 
+exports.updateappointment = async (req,res)=>{
+  console.log("HEll"+req.body)
+  try{
+    const appointmentId = req.body._id;
+    const start_time = req.body.start_time;
+    const end_time = req.body.end_time;
+    const machine_id = req.body.machine_id;
+    const notes = req.body.notes;
+    const duration = req.body.duration;
+    // const location = req.body.location;
 
+    const existingapp = await Appointment.findById(appointmentId);
+    if (!existingapp) {
+      return res.status(404).json({ message: 'Appointment not found' });
+    }
+
+    const updatedapp = await Appointment.findByIdAndUpdate(appointmentId,{
+      start_time: start_time,
+      end_time: end_time,
+      machine_id: machine_id,
+      notes: notes,
+      duration: duration,
+    }, { new: true });
+    res.status(200).json({ message: 'Appointment updated successfully', appointment: updatedapp });
+  }catch(error){
+    console.error('Error updating appointment:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
 exports.cancelappointment=async (req,res)=>{
   try{
     const appointmentId = req.params.id;

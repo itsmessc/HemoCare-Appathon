@@ -81,7 +81,7 @@ function Register({ navigation }) {
           keyboardShouldPersistTaps="handled"
         >
           <Image
-            source={require("../assets/logo1.png")}
+            source={require("../assets/logo1.jpg")}
             style={styles.logoImage}
           />
 

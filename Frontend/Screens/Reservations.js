@@ -434,6 +434,7 @@ const PatientMasterSheet = ({ navigation }) => {
     }
   };
   const handleEdit = (appointment) => {
+    console.log(appointment.patient_id+"Huuulla");
     navigation.navigate("Form", { appointment }); // Assuming you have a form screen for editing
   };
 

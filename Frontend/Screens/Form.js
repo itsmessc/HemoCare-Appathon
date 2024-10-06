@@ -26,6 +26,7 @@ function Form({ location = null, navigation }) {
   const [machineList, setMachineList] = useState([]);
   const [patientID, setPatientID] = useState("");
   const [notes, setNotes] = useState("");
+  const editing=route.params.appointment ? route.params.appointment : "";
   const [hours, setHours] = useState(null);
   const [minutes, setMinutes] = useState(null);
   const [locationID, setLocationID] = useState(location);
@@ -73,12 +74,40 @@ function Form({ location = null, navigation }) {
         value: machine._id,
         status: machine.status,
       }));
-
+  
       setMachineList(machineOptions);
     } else {
       setMachineList([]);
     }
-  }, [locationID, machines]);
+  
+    
+  }, [locationID, machines, editing]);
+  
+  useEffect(()=>{
+    if (editing!=="") {
+      setPatientID(editing.patient_id);
+      setNotes(editing.notes);
+      setDateTime(new Date(editing.start_time));
+      setEndtime(editing.end_time);
+  
+      // Parse duration
+      const duration = parseFloat(editing.duration);
+      console.log(duration+"hhe")
+      setHours(Math.floor(duration));
+      setMinutes(Math.round((duration % 1) * 100));
+  
+      for (const loc in machines) {
+        const foundMachine = machines[loc].find(
+          (machine) => machine._id === editing.machine_id
+        );
+        if (foundMachine) {
+          setLocationID(loc); // Set the location
+          setMachineID(foundMachine._id); // Set the machine ID
+          break; // Break out of loop once the machine is found
+        }
+      }
+    }
+  },[editing])
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -128,7 +157,7 @@ function Form({ location = null, navigation }) {
   
     // Step 4: If no conflicts, proceed to submit the appointment
     try {
-      await axios.post(`${ip}/appointment/addappointment`, {
+      if (editing==''){await axios.post(`${ip}/appointment/addappointment`, {
         patient_id: patientID,
         machine_id: machineID,
         start_time: startTime.toISOString(),
@@ -141,7 +170,21 @@ function Form({ location = null, navigation }) {
         }
       });
   
-      alert("Appointment added successfully");
+      alert("Appointment added successfully");}
+      else{
+        console.log("GG")
+        await axios.post(`${ip}/appointment/update`, { 
+          _id:editing._id,
+          patient_id: patientID,
+          machine_id: machineID,
+          start_time: startTime.toISOString(),
+          end_time: endTime.toISOString(),
+          duration,
+          type: isReservation ? "Reservation" : "Regular",
+        });
+        
+        alert("Appointment updated successfully");
+      }
       navigation.navigate("Dashboard");
     } catch (error) {
       console.error("Error submitting appointment:", error);
@@ -157,7 +200,9 @@ function Form({ location = null, navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <PatientSearchBar data={patients} set={setPatientID} />
+        {editing == '' && (
+          <PatientSearchBar data={patients} set={setPatientID} />
+        )}
         <Text style={styles.patientIDText}>Patient ID: {patientID}</Text>
 
         <DateTimePickerComponent
@@ -170,21 +215,21 @@ function Form({ location = null, navigation }) {
         <View style={styles.row}>
           <MyTextInput
             label="Hrs"
-            value={(hours ?? "").toString()}
+            state={( hours??"").toString()}
             onChange={(val) => setHours(isNaN(parseInt(val, 10)) ? null : parseInt(val, 10))}
             style={styles.input}
           />
           <View style={styles.width20} />
           <MyTextInput
             label="Mins"
-            value={(minutes ?? "").toString()}
+            state={(minutes ?? "").toString()}
             onChange={(val) => setMinutes(isNaN(parseInt(val, 10)) ? null : parseInt(val, 10))}
             style={styles.input}
           />
         </View>
         <Text style={styles.endTimeText}>End Time: {new Date(endtime).toLocaleString()}</Text>
 
-        {isReservation && (
+        {isReservation && (editing=='') && (
           <View style={styles.row}>
             <Text style={styles.label}>Recurring for month:</Text>
             <Switch
@@ -199,7 +244,7 @@ function Form({ location = null, navigation }) {
         )}
 
         
-        {isRecurring && (
+        {isRecurring &&(
           <View style={styles.dayToggleContainer}>
             {Object.keys(selectedDays).map((day) => (
               <TouchableOpacity

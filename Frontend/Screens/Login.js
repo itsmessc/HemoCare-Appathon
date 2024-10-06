@@ -80,17 +80,17 @@ function Login({ navigation }) {
           keyboardShouldPersistTaps="handled" // Ensures that tapping outside the input will dismiss the keyboard
         >
           <Image
-            source={require("../assets/logo1.png")}
+            source={require("../assets/logo1.jpg")}
             style={styles.logos}
           />
 
           <View style={styles.image}>
             <Image
-              source={require("../assets/image.png")}
+              source={require("../assets/image.jpg")}
               style={styles.logo}
             />
             <Image
-              source={require("../assets/image1.png")}
+              source={require("../assets/image1.jpg")}
               style={styles.logo}
             />
           </View>
