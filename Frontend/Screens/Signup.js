@@ -29,15 +29,20 @@ function Register({ navigation }) {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleSubmit = async () => {
-    // Phone number validation using regex
-    const phoneRegex = /^[0-9]{10}$/; // Adjust this regex as per your requirements (e.g., for 10-digit numbers)
+    const phoneRegex = /^[0-9]{10}$/;
     if (!phoneRegex.test(phone)) {
-      Alert.alert("Invalid Phone Number", "Please enter a valid 10-digit phone number.");
+      Alert.alert(
+        "Invalid Phone Number",
+        "Please enter a valid 10-digit phone number."
+      );
       return;
     }
 
     if (password !== confirmPassword) {
-      Alert.alert("Passwords do not match", "Please make sure both passwords match.");
+      Alert.alert(
+        "Passwords do not match",
+        "Please make sure both passwords match."
+      );
       return;
     }
 
@@ -49,16 +54,21 @@ function Register({ navigation }) {
         blood_group: bloodGroup,
         password,
       });
-      if (response.status==201){
-        Alert.alert("Existing User", "You have already registered, Login to continue");
+
+      if (response.status == 201) {
+        Alert.alert(
+          "Existing User",
+          "You have already registered, Login to continue"
+        );
         navigation.reset({
           index: 0,
           routes: [{ name: "Login" }],
         });
-      }
-      // Handle success
-      else if (response.status === 200) {
-        Alert.alert("Registration Successful", "You have registered successfully");
+      } else if (response.status === 200) {
+        Alert.alert(
+          "Registration Successful",
+          "You have registered successfully"
+        );
         navigation.reset({
           index: 0,
           routes: [{ name: "Tabs" }],
@@ -66,7 +76,10 @@ function Register({ navigation }) {
       }
     } catch (error) {
       console.error("Registration failed:", error);
-      Alert.alert("Registration Failed", "Please check your details and try again.");
+      Alert.alert(
+        "Registration Failed",
+        "Please check your details and try again."
+      );
     }
   };
 
@@ -76,19 +89,27 @@ function Register({ navigation }) {
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : null}
       >
-        <ScrollView
-          contentContainerStyle={styles.container}
-          keyboardShouldPersistTaps="handled"
-        >
+        <ScrollView contentContainerStyle={styles.container}>
+          {/* Logo and Heading */}
           <Image
-            source={require("../assets/logo1.jpg")}
+            source={require("../assets/logo1.png")}
             style={styles.logoImage}
           />
+          <Text style={styles.welcomeText}>Create a New Account</Text>
 
-          <MyTextInput label="Name" state={name} onChange={setName} />
-          <MyTextInput label="Position" state={position} onChange={setPosition} />
+          {/* Form Fields */}
+          <MyTextInput label="Full Name" state={name} onChange={setName} />
+          <MyTextInput
+            label="Position"
+            state={position}
+            onChange={setPosition}
+          />
           <MyTextInput label="Phone Number" state={phone} onChange={setPhone} />
-          <MyTextInput label="Blood Group" state={bloodGroup} onChange={setBloodGroup} />
+          <MyTextInput
+            label="Blood Group"
+            state={bloodGroup}
+            onChange={setBloodGroup}
+          />
 
           <PasswordInput
             label="Password"
@@ -97,26 +118,17 @@ function Register({ navigation }) {
             secureTextEntry={!showPassword}
             onTogglePassword={() => setShowPassword(!showPassword)}
           />
-
           <PasswordInput
-            label="Re-enter Password"
+            label="Confirm Password"
             value={confirmPassword}
             onChange={setConfirmPassword}
             secureTextEntry={!showConfirmPassword}
-            onTogglePassword={() => setShowConfirmPassword(!showConfirmPassword)}
+            onTogglePassword={() =>
+              setShowConfirmPassword(!showConfirmPassword)
+            }
           />
 
-          <View style={styles.container1}>
-            <Text style={styles.text1}>Existing User, </Text>
-            <Button
-              style={styles.regbutton}
-              mode="text"
-              onPress={() => navigation.navigate("Login")}
-            >
-              <Text style={styles.linkText}>Login</Text>
-            </Button>
-          </View>
-
+          {/* Register Button */}
           <View style={styles.buttonContainer}>
             <Button
               style={styles.button}
@@ -124,6 +136,18 @@ function Register({ navigation }) {
               onPress={handleSubmit}
             >
               Register
+            </Button>
+          </View>
+
+          {/* Login Redirection */}
+          <View style={styles.loginContainer}>
+            <Text style={styles.existingUserText}>Already Registered?</Text>
+            <Button
+              style={styles.loginButton}
+              mode="text"
+              onPress={() => navigation.navigate("Login")}
+            >
+              <Text style={styles.loginText}>Login</Text>
             </Button>
           </View>
         </ScrollView>
@@ -134,45 +158,50 @@ function Register({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
-    backgroundColor: colors.background,
-    justifyContent: "flex-start",
     flexGrow: 1,
+    padding: 20,
+    justifyContent: "center",
+    backgroundColor: colors.background,
   },
   logoImage: {
-    width: 250,
-    height: 250,
-    resizeMode: "contain",
+    width: 240,
+    height: 120,
     alignSelf: "center",
-    marginVertical: 20,
+  },
+  welcomeText: {
+    textAlign: "center",
+    fontSize: 25,
+    fontWeight: "bold",
+    color: colors.darkgreen,
+    marginBottom: 25,
   },
   buttonContainer: {
+    marginTop: 5,
     width: "100%",
-    marginTop: 20,
   },
   button: {
-    backgroundColor: "#22895D",
-    width: "100%",
+    backgroundColor: colors.darkgreen,
     paddingVertical: 5,
-    borderRadius: 8,
-    marginTop: -15,
+    borderRadius: 10,
   },
-  container1: {
-    flexDirection: 'row', // Align items in a row
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: -10,
+  loginContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 10,
   },
-  text1: {
-    fontSize: 16, // Set the font size
+  existingUserText: {
+    fontSize: 16,
+    color: colors.text,
+    marginRight: 5,
   },
-  regbutton: {
-    padding: 0, // Remove padding for text button
+  loginButton: {
+    padding: 0,
   },
-  linkText: {
-    color: 'blue', // Blue color for the link
-    textDecorationLine: 'underline', // Underline the text
-    fontSize: 16, // Match font size with the text
+  loginText: {
+    color: colors.blue,
+    fontSize: 16,
+    padding: 0,
   },
 });
 

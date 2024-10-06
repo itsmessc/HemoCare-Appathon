@@ -9,7 +9,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Platform,
-  Text
+  Text,
 } from "react-native";
 import { Button } from "react-native-paper";
 import axios from "axios";
@@ -44,7 +44,10 @@ function Login({ navigation }) {
   const handleSubmit = async () => {
     const phoneRegex = /^[0-9]{10}$/; // Adjust this regex as per your requirements (e.g., for 10-digit numbers)
     if (!phoneRegex.test(phone)) {
-      Alert.alert("Invalid Phone Number", "Please enter a valid 10-digit phone number.");
+      Alert.alert(
+        "Invalid Phone Number",
+        "Please enter a valid 10-digit phone number."
+      );
       return;
     }
     try {
@@ -79,18 +82,15 @@ function Login({ navigation }) {
           contentContainerStyle={styles.container}
           keyboardShouldPersistTaps="handled" // Ensures that tapping outside the input will dismiss the keyboard
         >
-          <Image
-            source={require("../assets/logo1.jpg")}
-            style={styles.logos}
-          />
+          <Image source={require("../assets/logo1.png")} style={styles.logos} />
 
           <View style={styles.image}>
             <Image
-              source={require("../assets/image.jpg")}
+              source={require("../assets/image.png")}
               style={styles.logo}
             />
             <Image
-              source={require("../assets/image1.jpg")}
+              source={require("../assets/image1.png")}
               style={styles.logo}
             />
           </View>
@@ -103,16 +103,6 @@ function Login({ navigation }) {
             secureTextEntry={!showPassword}
             onTogglePassword={() => setShowPassword(!showPassword)}
           />
-          <View style={styles.container1}>
-      <Text style={styles.text1}>New User, </Text>
-      <Button
-        style={styles.regbutton}
-        mode="text" // Use text mode for a hyperlink look
-        onPress={() => navigation.navigate("Signup")}
-      >
-        <Text style={styles.linkText}>Register</Text>
-      </Button>
-    </View>
           <View style={{ width: "100%" }}>
             <Button
               style={styles.button}
@@ -122,7 +112,16 @@ function Login({ navigation }) {
               Login
             </Button>
           </View>
-          
+          <View style={styles.newUserContainer}>
+            <Text style={styles.newUserText}>New User? </Text>
+            <Button
+              style={styles.regbutton}
+              mode="text" // Use text mode for a hyperlink look
+              onPress={() => navigation.navigate("Signup")}
+            >
+              <Text style={styles.registerLink}>Register Now</Text>
+            </Button>
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
@@ -144,8 +143,7 @@ const styles = StyleSheet.create({
     width: "100%",
     padding: 5,
     fontSize: 18,
-    borderRadius:5,
-    
+    borderRadius: 5,
   },
   logo: {
     width: 130,
@@ -168,22 +166,24 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginTop: -30,
   },
-  container1: {
-    flexDirection: 'row', // Align items in a row
-    alignItems: 'center',
-    justifyContent:'center',
-    marginTop: -10,
+  newUserContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    // marginTop: 5,
   },
-  text1: {
-    fontSize: 16,         // Set the font size
+  newUserText: {
+    fontSize: 16,
+    color: colors.text,
   },
-  regbutton: {
-    padding: 0,           // Remove padding for text button
+  regButton: {
+    padding: 0,
+    textDecorationLine: "underline",
+    backgroundColor: "lightblue",
   },
-  linkText: {
-    color: 'blue',        // Blue color for the link
-    textDecorationLine: 'underline', // Underline the text
-    fontSize: 16,         // Match font size with the text
+  registerLink: {
+    color: colors.blue,
+    fontSize: 16,
   },
 });
 
