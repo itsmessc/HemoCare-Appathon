@@ -280,34 +280,35 @@ cron.schedule('*/1 * * * *', async () => {
 });
 
 exports.filterapp = async(req,res)=>{
-  console.log(req.body)
+  console.log(req.body+"MACHINE_ID")
   const { startDate, endDate, patientID, mid } = req.body;
 
   try {
     
-    let query = {
-      start_time: { $gte: new Date(startDate), $lte: new Date(endDate) }
-    };
-
-    
-
     // Fetch appointments based on the query
     const appointments = await Appointment.find({
       start_time: { $gte: new Date(startDate), $lte: new Date(endDate) }
     }).populate('machine_id', 'manufacturing_serial_number');
-    var jk=appointments
+    
+    console.log(appointments);
+    
+    let filteredAppointments = appointments;
+    
+    // Filter by patientID if provided
     if (patientID) {
-      jk = appointments.filter((app) => app.patient_id === patientID);
-    }
-    var km=jk
-    if (mid) {
-      km = jk.filter((app) => app.machine_id.manufacturing_serial_number === mid);
+      filteredAppointments = filteredAppointments.filter((app) => app.patient_id === patientID);
     }
     
-    console.log(km);
+    // Filter by machineID (mid) if provided
+    if (mid) {
+      filteredAppointments = filteredAppointments.filter((app) => app.machine_id._id.toString() === mid);
+    }
+    
+    console.log(filteredAppointments);
+    
     
     // Send back the filtered appointments
-    return res.status(200).json(km);
+    return res.status(200).json(filteredAppointments);
   } catch (error) {
     console.error('Error fetching appointments:', error);
     return res.status(500).json({ message: 'Error fetching appointments' });

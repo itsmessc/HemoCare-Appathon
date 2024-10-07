@@ -4,19 +4,50 @@ const socketIo = require("socket.io");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const OneSignal = require('onesignal-node');
+const env = require('dotenv');
+// const fetch = require('node-fetch');
+env.config(); // Load environment variables
+
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, { cors: { origin: "*" } });
-const env = require('dotenv');
-const client = new OneSignal.Client(process.env.ONEAPID,process.env.ONEAPI);
-env.config();
 const port = 7878;
+console.log("OneSignal App ID:", process.env.ONEAPID);
+console.log("OneSignal API Key:", process.env.ONEAPI);
 
+
+async function testOneSignal(location,name,message) {
+  const response = await fetch(`https://onesignal.com/api/v1/notifications`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Basic ${process.env.ONEAPI}`,
+    },
+    body: JSON.stringify({
+      app_id: process.env.ONEAPID,
+      contents: { en: message },
+      included_segments: ["All"],
+      headings: { en: location+": "+name },
+    }),
+  });
+
+  const data = await response.json();
+  console.log(data);
+}
+
+
+
+// Initialize OneSignal Client
+const client = new OneSignal.Client({
+  app: {
+    appAuthKey: process.env.ONEAPI, // Your OneSignal API Key
+    appId: process.env.ONEAPID.trim() // Your OneSignal App ID
+  }
+});
+
+// MongoDB Connection
 mongoose
-  .connect(
-    process.env.DB_URL,
-    { useNewUrlParser: true, useUnifiedTopology: true }
-  )
+  .connect(process.env.DB_URL, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     console.log("Database Connected");
   })
@@ -26,41 +57,24 @@ mongoose
 
 app.use(cors());
 app.use(express.json());
-
-const patientrouter = require("./routes/patient");
-const staffroute = require("./routes/staff");
-const appointmentroute = require("./routes/appointment");
-const machine = require("./routes/machine");
-const otp=require("./routes/otp")
-app.use("/patient", patientrouter);
-app.use("/staff", staffroute);
-app.use("/appointment", appointmentroute);
-app.use("/machine", machine);
-app.use("/otp",otp);
-app.post('/send-to-all', async (req, res) => {
-  console.log("FUck you");
-  
-  const notification = {
-    app_id: 'process.env.ONEAPID', // Your OneSignal App ID
-    contents: { en: "Hello from OneSignal!" }, // Notification message
-    included_segments: ["All"], // Send to all users
-    headings: { en: "MIC testing Notification" }, // Notification title
-  };
-
-  try {
-    const response = await client.createNotification(notification);
-    console.log('Notification sent successfully to all users:', response);
-    return res.status(200).json({ success: true, response });
-  } catch (error) {
-    console.error('Error sending notification to all users:', error);
-    return res.status(500).json({ success: false, error: error.message });
-  }
-});
-
 const Chatbox = require("./models/chatbox");
 const Machine = require("./models/machine");
 const Appointments = require("./models/appointment");
 const Patient=require('./models/patient');
+// Routes
+app.use("/patient", require("./routes/patient"));
+app.use("/staff", require("./routes/staff"));
+app.use("/appointment", require("./routes/appointment"));
+app.use("/machine", require("./routes/machine"));
+app.use("/otp", require("./routes/otp"));
+
+// Send Notification Function
+
+
+
+// Test Notification
+// sendnoti("Hi", "Hello");
+
 // WebSocket Connection
 io.on("connection", (socket) => {
   console.log("A user connected");
@@ -69,7 +83,6 @@ io.on("connection", (socket) => {
   socket.on("getHistory", async () => {
     try {
       const messages = await Chatbox.find().sort({ createdAt: -1 });
-
       socket.emit("history", messages);
     } catch (err) {
       console.error("Error fetching messages:", err);
@@ -80,7 +93,6 @@ io.on("connection", (socket) => {
   // Handle incoming messages
   socket.on("message", async (data) => {
     try {
-      // Save the message to MongoDB
       const newMessage = new Chatbox({
         sender_id: data.sender_id,
         content: data.content,
@@ -89,11 +101,8 @@ io.on("connection", (socket) => {
       });
 
       const savedMessage = await newMessage.save();
-
-      // Populate the sender_id field for the saved message
       const populatedMessage = await Chatbox.findById(savedMessage._id).exec();
-
-      // Emit the populated message to all connected clients
+      testOneSignal(data.location,data.staff,data.content);
       io.emit("message", populatedMessage);
       console.log("New message:", populatedMessage);
     } catch (error) {
@@ -118,15 +127,11 @@ app.get("/messages", async (req, res) => {
   }
 });
 
-// Watch for changes in the Machine and Appointments collections
+// MongoDB Change Streams
 Appointments.watch().on("change", async (change) => {
   try {
-    if (
-      change.operationType === "insert" ||
-      change.operationType === "update"
-    ) {
+    if (change.operationType === "insert" || change.operationType === "update") {
       const appointment = await Appointments.findById(change.documentKey._id);
-      console.log("Tet" + appointment);
       if (appointment) {
         io.emit("appointmentreservation", appointment);
         console.log("Appointment reservation updated:", appointment);
@@ -135,7 +140,6 @@ Appointments.watch().on("change", async (change) => {
       }
     }
     if (change.operationType === "delete") {
-      console.log("Delete detected");
       io.emit("cancelreser", change.documentKey._id);
     }
   } catch (err) {
@@ -153,15 +157,17 @@ Machine.watch().on("change", async (change) => {
   }
 });
 
-Patient.watch().on("change",async (change)=>{
-  try{
+Patient.watch().on("change", async (change) => {
+  try {
     const fullDocument = await Patient.findById(change.documentKey._id);
-    io.emit("patientUpdate",fullDocument);
-    console.log("Patient document updated:",fullDocument);
-  }catch(err){
-    console.error("Error fetching patient document:",err);
+    io.emit("patientUpdate", fullDocument);
+    console.log("Patient document updated:", fullDocument);
+  } catch (err) {
+    console.error("Error fetching patient document:", err);
   }
-})
+});
+
+// Start Server
 server.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

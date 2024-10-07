@@ -47,26 +47,25 @@ function RepScreen({ navigation }) {
     try {
       const response = await axios.post(`${ip}/appointment/filter`, {
         startDate: startDate.toISOString(),
-          endDate: endDate.toISOString(),
-          patientID: patientID || undefined, // Only include if defined
-          mid: machineID || undefined, // Only include if defined
+        endDate: endDate.toISOString(),
+        patientID: patientID || undefined,
+        mid: machineID || undefined,
       });
-      // console.log(JSON.stringify(response.data)+"llll")
-      setAppointments(response.data); // Store fetched appointments
+  
+      // Directly use the response data for generating the PDF
+      await generatePDF(response.data); // Pass the fetched appointments directly
+      setAppointments(response.data); // Update state with fetched appointments
+      // console.log(JSON.stringify(response.data) + " HELLLLLLLO");s
     } catch (error) {
       console.error('Error fetching appointments:', error);
+      alert('Failed to fetch appointments. Please try again.');
     }
   };
-
+  
   const handleGenerateReport = async () => {
     // Filter appointments based on date and patientID
-    fetchAppointments();
-    try {
-      await generatePDF(appointments);
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-      alert('Failed to generate report. Please try again.');
-    }
+    await fetchAppointments();
+    
   };
 
   return (
@@ -105,7 +104,7 @@ function RepScreen({ navigation }) {
 
         <Button
           mode="contained"
-          onPress={handleGenerateReport}
+          onPress={fetchAppointments}
           style={styles.button}
         >
           Generate Report

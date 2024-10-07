@@ -2,9 +2,14 @@ import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system';
 import { Alert } from 'react-native';
-
+import {useState} from 'react'
 export const generatePDF = async (appointments) => {
-  // Prepare the HTML content
+  console.log(appointments);
+  if (!appointments.length) {
+    Alert.alert('No Appointments', 'There are no appointments to generate a report.');
+    return;
+  }
+
   const htmlContent = `
     <html>
   <head>
@@ -61,7 +66,15 @@ export const generatePDF = async (appointments) => {
 </html>
 
   `;
-
+  const simpleHtmlContent = `
+  <html>
+    <body>
+      <h1>Test PDF</h1>
+      <p>This is a test.</p>
+    </body>
+  </html>`;
+  // await new Promise(resolve => setTimeout(resolve, 200)); // Wait for 100ms
+          appointments=null;
   try {
     // Generate the PDF
     const { uri } = await Print.printToFileAsync({
