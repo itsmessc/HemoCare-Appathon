@@ -13,8 +13,8 @@ function Cards({ locationData, locationName }) {
   const occupied = locationData.filter(
     (machine) => machine.status === "Occupied"
   ).length;
-  const preparations=locationData.filter(
-    (machine)=>machine.status==='Preparing'
+  const preparations = locationData.filter(
+    (machine) => machine.status === "Preparing"
   ).length;
   const values = [preparations, vacant, occupied]; // Change the values here [Vacant - green, Preparing - blue, Occupied - red] instead of 3 1 4
   return (
@@ -50,7 +50,7 @@ function Cards({ locationData, locationName }) {
 const styles = StyleSheet.create({
   card: {
     height: 140,
-    width: "100%",
+    width: "103%",
     backgroundColor: "#eee",
     flexDirection: "row",
     justifyContent: "space-evenly",
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    alignItems: "",
+    alignItems: "center",
   },
   row: {
     flexDirection: "row",
