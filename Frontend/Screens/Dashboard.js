@@ -4,14 +4,14 @@ import {
   View,
   StyleSheet,
   ScrollView,
-  TouchableOpacity,
   TouchableHighlight,
 } from "react-native";
 import { Button, Appbar } from "react-native-paper";
 import { MachineContext } from "../MachineContext";
-import Cards from "./Cardss"; // Ensure the import matches your file name
+import Cards from "./Cardss";
 import { removeToken } from "../store";
 import colors from "../constants/colors";
+import { Ionicons } from "@expo/vector-icons"; // Make sure to install this package
 
 function Dashboard({ navigation }) {
   const [data, setData] = useState({
@@ -28,7 +28,7 @@ function Dashboard({ navigation }) {
     let vacant = 0;
     let occupied = 0;
     let preparing = 0;
-    // Iterate over all locations and count total, vacant, and occupied machines
+
     Object.values(machines).forEach((locationMachines) => {
       locationMachines.forEach((machine) => {
         total++;
@@ -38,11 +38,9 @@ function Dashboard({ navigation }) {
       });
     });
 
-    // Update the state with the calculated data
     setData({ total, vacant, occupied, preparing });
-  }, [machines]); // Add machines as a dependency so that this effect runs when machines change
+  }, [machines]);
 
-  // Prepare the entries, sort by the number of vacant machines, then map
   const sortedEntries = Object.entries(machines)
     .map(([location, locationData]) => {
       const vacantCount = locationData.filter(
@@ -50,7 +48,7 @@ function Dashboard({ navigation }) {
       ).length;
       return { location, locationData, vacantCount };
     })
-    .sort((a, b) => b.vacantCount - a.vacantCount); // Sort in descending order
+    .sort((a, b) => b.vacantCount - a.vacantCount);
 
   const handleLogout = () => {
     removeToken();
@@ -62,11 +60,15 @@ function Dashboard({ navigation }) {
 
   return (
     <View style={styles.areaview}>
-      {/* AppBar with Logout Button */}
       <Appbar.Header style={styles.appbars}>
+        <Appbar.Action icon="home" color="#fff" />
         <Appbar.Content
           title="Dashboard"
-          titleStyle={{ color: colors.white }}
+          titleStyle={{
+            color: colors.white,
+            fontFamily: "sans-serif",
+            fontWeight: "bold",
+          }}
         />
         <Appbar.Action
           icon="logout"
@@ -75,65 +77,71 @@ function Dashboard({ navigation }) {
         />
       </Appbar.Header>
 
-      <View style={styles.container}>
-        {/* Summary Boxes */}
-        <View style={styles.box}>
-          <View
-            style={[
-              styles.boxeinside,
-              {
-                backgroundColor: "#4B70F5",
-                width: 75,
-                height: 75,
-              },
-            ]}
-          >
-            <Text style={styles.texts}>Total</Text>
-            <Text style={[styles.texts, styles.number]}>{data.total}</Text>
+      <ScrollView
+        contentContainerStyle={styles.scrollViewContent} // Use this style to center content
+        style={styles.cardsContainer}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+      >
+        <View style={styles.container}>
+          {/* Summary Boxes - 2x2 Grid */}
+          <View style={styles.gridContainer}>
+            <View style={[styles.summaryBox, { backgroundColor: "#4B70F5" }]}>
+              <Ionicons
+                name="bar-chart"
+                size={35}
+                color="white"
+                style={styles.icon}
+              />
+              <View style={styles.textContainer}>
+                <Text style={styles.texts}>Total</Text>
+                <Text style={[styles.texts, styles.number]}>{data.total}</Text>
+              </View>
+            </View>
+            <View
+              style={[styles.summaryBox, { backgroundColor: colors.green }]}
+            >
+              <Ionicons
+                name="checkmark-circle"
+                size={35}
+                color="white"
+                style={styles.icon}
+              />
+              <View style={styles.textContainer}>
+                <Text style={styles.texts}>Vacant</Text>
+                <Text style={[styles.texts, styles.number]}>{data.vacant}</Text>
+              </View>
+            </View>
+            <View style={[styles.summaryBox, { backgroundColor: "#E63946" }]}>
+              <Ionicons
+                name="alert-circle"
+                size={35}
+                color="white"
+                style={styles.icon}
+              />
+              <View style={styles.textContainer}>
+                <Text style={styles.texts}>Occupied</Text>
+                <Text style={[styles.texts, styles.number]}>
+                  {data.occupied}
+                </Text>
+              </View>
+            </View>
+            <View style={[styles.summaryBox, { backgroundColor: "#ff8c00" }]}>
+              <Ionicons
+                name="time"
+                size={35}
+                color="white"
+                style={styles.icon}
+              />
+              <View style={styles.textContainer}>
+                <Text style={styles.texts}>Preparing</Text>
+                <Text style={[styles.texts, styles.number]}>
+                  {data.preparing}
+                </Text>
+              </View>
+            </View>
           </View>
-          <View
-            style={[
-              styles.boxeinside,
-              {
-                backgroundColor: colors.green,
-                width: 75,
-                height: 75,
-              },
-            ]}
-          >
-            <Text style={styles.texts}>Vacant</Text>
-            <Text style={[styles.texts, styles.number]}>{data.vacant}</Text>
-          </View>
-          <View
-            style={[
-              styles.boxeinside,
-              {
-                backgroundColor: "#E63946",
-                width: 75,
-                height: 75,
-              },
-            ]}
-          >
-            <Text style={styles.texts}>Occupied</Text>
-            <Text style={[styles.texts, styles.number]}>{data.occupied}</Text>
-          </View>
-          <View
-            style={[
-              styles.boxeinside,
-              {
-                backgroundColor: "#ff9933",
-                width: 75,
-                height: 75,
-              },
-            ]}
-          >
-            <Text style={styles.texts}>Preparing</Text>
-            <Text style={[styles.texts, styles.number]}>{data.preparing}</Text>
-          </View>
-        </View>
-
-        {/* Button */}
-        <View style={{ width: "100%" }}>
+          {/* Book Appointment Button */}
           <Button
             style={styles.button}
             mode="contained"
@@ -141,23 +149,20 @@ function Dashboard({ navigation }) {
           >
             Book Appointment
           </Button>
-        </View>
-
-        {/* Scrollable Cards Section */}
-        <ScrollView style={styles.cardsContainer}>
+          {/* Scrollable Cards Section */}
           {sortedEntries.map(({ location, locationData }) => (
             <TouchableHighlight
               key={location}
               onPress={() =>
                 navigation.navigate("Location", { navigation, location })
               }
-              underlayColor="#FFFFFF"
+              underlayColor={colors.background}
             >
               <Cards locationName={location} locationData={locationData} />
             </TouchableHighlight>
           ))}
-        </ScrollView>
-      </View>
+        </View>
+      </ScrollView>
     </View>
   );
 }
@@ -165,58 +170,71 @@ function Dashboard({ navigation }) {
 const styles = StyleSheet.create({
   areaview: {
     flex: 1,
-    backgroundColor: "dodgerblue",
+    backgroundColor: colors.background,
+  },
+  scrollViewContent: {
+    flexGrow: 1, // Allow ScrollView to grow
+    justifyContent: "center", // Center items vertically
+    alignItems: "center", // Center items horizontally
+    paddingBottom: 20, // Add some padding at the bottom if needed
   },
   container: {
     flex: 1,
     backgroundColor: colors.background,
     alignItems: "center",
-    flexDirection: "column",
     justifyContent: "center",
-    color: colors.white,
-    gap: 15,
-    padding: 10,
+    padding: 15,
     width: "100%",
-    backgroundColor: colors.white,
   },
-  boxeinside: {
-    borderRadius: 8,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
+  appbars: {
+    backgroundColor: "#008080",
+    color: colors.white,
+  },
+  gridContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-evenly",
+    marginBottom: 10,
+    // gap: 10,
+  },
+  summaryBox: {
+    flexDirection: "row",
+    alignItems: "center", // Center items vertically
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 13,
+    width: "45%", // Adjust width as needed
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 5,
+  },
+  icon: {
+    marginRight: 10, // Space between icon and text
+  },
+  textContainer: {
+    flex: 1, // Make text container take the remaining space
   },
   texts: {
     color: colors.white,
-    fontSize: 15,
-    fontWeight: "bold",
-    textAlign: "center",
-    paddingTop: 10,
-  },
-  box: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 10,
-    alignItems: "flex-start",
+    fontSize: 16, // Slightly smaller font
+    fontWeight: "800",
+    textAlign: "right",
   },
   number: {
-    fontSize: 40,
-    paddingTop: 0,
+    fontSize: 30, // Reduced number size
+    marginTop: 5,
   },
   button: {
-    backgroundColor: "#22895D",
-    color: colors.white,
-    width: "100%",
-    padding: 10,
-    fontSize: 18,
+    backgroundColor: "#008080",
+    width: "94%",
+    paddingVertical: 8,
+    borderRadius: 8,
+    marginBottom: 20,
   },
   cardsContainer: {
     width: "100%",
-    flexGrow: 1, // Ensure the container grows to fit its content
-  },
-  appbars: {
-    backgroundColor: colors.darkgreen,
-    color: colors.white,
   },
 });
 

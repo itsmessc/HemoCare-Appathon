@@ -27,7 +27,7 @@ const BottomTabNavigator = () => {
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: colors.darkgreen, // Color for active tab
+        tabBarActiveTintColor: "#008080", // Color for active tab
         tabBarInactiveTintColor: colors.darkgrey, // Color for inactive tabs
         tabBarLabelStyle: { fontSize: 12 }, // Label styling
         tabBarStyle: {
@@ -47,7 +47,11 @@ const BottomTabNavigator = () => {
         component={Chat}
         options={{ headerShown: false }}
       />
-      <Tab.Screen name="Reservations" component={Reservations} />
+      <Tab.Screen
+        name="Reservations"
+        component={Reservations}
+        options={{ headerShown: false }}
+      />
     </Tab.Navigator>
   );
 };

@@ -12,4 +12,6 @@ export default {
   grey: "#ddd",
   darkgrey: "#999",
   lightblue: "#B5D2FF",
+  teal: "#008080",
+  expandedRowBackground: "#F5F5F5",
 };

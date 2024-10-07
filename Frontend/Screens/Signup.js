@@ -92,7 +92,7 @@ function Register({ navigation }) {
         <ScrollView contentContainerStyle={styles.container}>
           {/* Logo and Heading */}
           <Image
-            source={require("../assets/logo1.png")}
+            source={require("../assets/logo1.jpg")}
             style={styles.logoImage}
           />
           <Text style={styles.welcomeText}>Create a New Account</Text>
