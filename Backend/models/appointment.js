@@ -11,6 +11,7 @@ const AppointmentSchema = new mongoose.Schema({
       },
       message: props => `Patient with ID ${props.value} does not exist!`
     }
+    
   },
   start_time: { type: Date, required: true },
   end_time: { type: Date, required: true },

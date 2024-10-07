@@ -71,7 +71,14 @@ export const MachineProvider = ({ children }) => {
         };
       });
     });
-
+    socket.on("patientUpdate",(newp)=>{
+      setpatients((prevPatients)=>{
+        return [
+          ...prevPatients.filter((item)=>item._id!==newp._id),
+          newp,
+        ];
+      });
+    })
     // Handle appointment updates from WebSocket
     socket.on("appointmentreservation", (newAppointment) => {
       setAppointments((prevAppointments) => {

@@ -149,6 +149,13 @@ function Dashboard({ navigation }) {
           >
             Book Appointment
           </Button>
+          <Button
+            style={styles.button}
+            mode="contained"
+            onPress={() => navigation.navigate("Patient")}
+          >
+            Add Patient
+          </Button>
           {/* Scrollable Cards Section */}
           {sortedEntries.map(({ location, locationData }) => (
             <TouchableHighlight

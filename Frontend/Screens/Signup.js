@@ -22,6 +22,7 @@ function Register({ navigation }) {
   const [name, setName] = useState("");
   const [position, setPosition] = useState("");
   const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [bloodGroup, setBloodGroup] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -30,11 +31,16 @@ function Register({ navigation }) {
 
   const handleSubmit = async () => {
     const phoneRegex = /^[0-9]{10}$/;
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!phoneRegex.test(phone)) {
       Alert.alert(
         "Invalid Phone Number",
         "Please enter a valid 10-digit phone number."
       );
+      return;
+    }
+    if (!emailRegex.test(email)) {
+      Alert.alert("Invalid Email", "Please enter a valid email address.");
       return;
     }
 
@@ -109,6 +115,11 @@ function Register({ navigation }) {
             label="Blood Group"
             state={bloodGroup}
             onChange={setBloodGroup}
+          />
+          <MyTextInput
+            label="Email"
+            state={email}
+            onChange={setEmail}
           />
 
           <PasswordInput

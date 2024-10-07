@@ -1,33 +1,34 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useEffect, useState, useContext } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import * as Progress from 'react-native-progress';
 import moment from 'moment'; 
+import { MachineContext } from '../MachineContext';
+import colors from '../constants/colors';
+import axios from 'axios';
+import { ip } from '../constants/variables';
 
 const MachineOcc = ({ machine }) => {
   const [progress, setProgress] = useState(0);
   const [remainingTime, setRemainingTime] = useState('N/A');
+  const { appointments } = useContext(MachineContext);
+  const [notes, setNotes] = useState('');
+  const [showNotes, setShowNotes] = useState(false);
 
-  // Helper function to calculate progress percentage
   const calculateProgress = () => {
     if (!machine.start_time || !machine.end_time) return 0;
 
     const startTime = moment(machine.start_time);
     const endTime = moment(machine.end_time);
-    const now = moment(); // Current time
+    const now = moment();
 
-    // Calculate total duration
     const totalDuration = endTime.diff(startTime);
-    // Calculate elapsed time
     const elapsedTime = now.diff(startTime);
 
-    // If current time is after end time, set progress to 100%
     if (now.isAfter(endTime)) return 1;
 
-    // Calculate the progress percentage
-    return Math.min(elapsedTime / totalDuration, 1); // Ensure progress does not exceed 100%
+    return Math.min(elapsedTime / totalDuration, 1);
   };
 
-  // Helper function to format the remaining time
   const formatRemainingTime = () => {
     if (!machine.end_time) return 'N/A';
 
@@ -35,47 +36,102 @@ const MachineOcc = ({ machine }) => {
     const now = moment();
     const remainingDuration = endTime.diff(now);
 
-    // If time has passed, return 'Completed' or any message
     if (remainingDuration < 0) return 'Completed';
 
     return moment.utc(remainingDuration).format('HH:mm:ss');
   };
 
+  const handleCancel = (id) => {
+    Alert.alert(
+      'Confirm Cancellation',
+      'Are you sure you want to cancel this appointment?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: async () => {
+            try {
+              await axios.delete(`${ip}/appointment/cancelappointment/${id}`);
+              Alert.alert('Cancel Appointment', 'Appointment has been canceled successfully.');
+            } catch (err) {
+              console.error('Error canceling appointment:', err);
+              Alert.alert('Cancel Appointment', `Failed to cancel appointment with ID: ${id}. Please try again later.`);
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
   useEffect(() => {
-    // Calculate and set progress and remaining time
     const updateMachineStatus = () => {
       setProgress(calculateProgress());
       setRemainingTime(formatRemainingTime());
     };
-
-    // Initial update
     updateMachineStatus();
 
-    // Update every second
     const interval = setInterval(updateMachineStatus, 1000);
-
-    // Cleanup interval on component unmount
     return () => clearInterval(interval);
-  }, [machine]); // Depend on machine to re-calculate when machine changes
+  }, [machine]);
+
+  useEffect(() => {
+    const notif = () => {
+      const app = appointments.filter((app) => app._id === machine.appointment_id);
+      setNotes(app.length > 0 ? app[0].notes : '');
+    };
+    notif();
+  }, [appointments, machine]);
 
   return (
     <View style={styles.container}>
       <View style={styles.infoContainer}>
-        <Text style={styles.machineText}>MSN:{machine.manufacturing_serial_number}  Patient Id:{machine.patient_id}</Text>
+        <Text style={styles.machineText}>
+          MSN: {machine.manufacturing_serial_number} Patient Id: {machine.patient_id}
+        </Text>
         <Text style={styles.timeText}>
           {remainingTime} Left
         </Text>
       </View>
-      {/* Progress Bar with calculated progress */}
+
       <Progress.Bar
         progress={progress}
-        width={null} // Let the bar take the full width of the parent
+        width={null}
         height={10}
         color="#4B70F5"
         unfilledColor="#E0E0E0"
         borderWidth={0}
         style={styles.progressBar}
       />
+
+      {/* Notes Toggle Button */}
+      <View style={styles.notesContainer}>
+        <TouchableOpacity 
+          style={styles.notesButton} 
+          onPress={() => setShowNotes((prev) => !prev)}
+        >
+          <Text style={styles.notesButtonText}>
+            {showNotes ? 'Hide Notes' : 'Show Notes'}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          style={styles.cancelbutton} 
+          onPress={() => handleCancel(machine.appointment_id)}
+        >
+          <Text style={styles.cancelbuttonte}>
+            Cancel
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {showNotes && (
+        <View style={styles.notesDisplay}>
+          <Text>{notes}</Text>
+        </View>
+      )}
     </View>
   );
 };
@@ -83,35 +139,65 @@ const MachineOcc = ({ machine }) => {
 const styles = StyleSheet.create({
   container: {
     padding: 10,
-    backgroundColor: '#FFF', // Background color for the container
-    borderRadius: 10, // Rounded corners to match the image style
+    backgroundColor: '#FFF',
+    borderRadius: 10,
     marginHorizontal: 15,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
-    // Elevation property for Android
     elevation: 5,
-    height: 75,
-    marginBottom:10
+    height: 'auto',
+    marginBottom: 10,
   },
   infoContainer: {
-    flexDirection: 'row', // Arrange text in a row
-    justifyContent: 'space-between', // Space out the text elements
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 5, // Space between the text and progress bar
+    marginBottom: 5,
   },
   machineText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#000', // Black color for the text
+    color: '#000',
   },
   timeText: {
     fontSize: 14,
-    color: '#666', // Grey color for the time text
+    color: '#666',
   },
   progressBar: {
     marginTop: 5,
+  },
+  notesContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  notesButton: {
+    backgroundColor: 'transparent',
+    padding: 5,
+  },
+  notesButtonText: {
+    color: colors.blue,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  notesDisplay: {
+    marginTop: 5,
+    padding: 5,
+    borderTopWidth: 1,
+    borderTopColor: '#E0E0E0',
+  },
+  cancelbutton: {
+    backgroundColor: 'red',
+    padding: 5,
+    borderRadius: 5,
+  },
+  cancelbuttonte: {
+    color: colors.white,
+    fontSize: 14,
+    fontWeight: '600',
   },
 });
 

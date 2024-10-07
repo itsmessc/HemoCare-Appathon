@@ -1,9 +1,9 @@
-const appointment = require('../models/appointment.js');
+
 const Appointment = require('../models/appointment.js');
 const Machine = require('../models/machine.js')
 const cron = require('node-cron');
 const OneSignal = require('onesignal-node');
-const client = new OneSignal.Client('25d4fd08-24db-4109-8f17-440d23a9a89e','NDcxNjFlZjktOWU2OS00NjIxLTgxZDAtNjhkMDMxMzJkNThm');
+const client = new OneSignal.Client(process.env.ONEAPID,process.env.ONEAPI);
 
 function dayIndex(day) {
   const days = {
@@ -196,7 +196,7 @@ exports.cancelappointment=async (req,res)=>{
 
 async function sendnoti (head,content){
   const notification = {
-    app_id: '25d4fd08-24db-4109-8f17-440d23a9a89e', // Your OneSignal App ID
+    app_id:process.env.ONEAPID, // Your OneSignal App ID
     contents: { en: content }, // Notification message
     included_segments: ["All"], // Send to all users
     headings: { en: head }, // Notification title
@@ -278,4 +278,40 @@ cron.schedule('*/1 * * * *', async () => {
         console.error('Error running cron job:', error);
     }
 });
+
+exports.filterapp = async(req,res)=>{
+  console.log(req.body)
+  const { startDate, endDate, patientID, mid } = req.body;
+
+  try {
+    
+    let query = {
+      start_time: { $gte: new Date(startDate), $lte: new Date(endDate) }
+    };
+
+    
+
+    // Fetch appointments based on the query
+    const appointments = await Appointment.find({
+      start_time: { $gte: new Date(startDate), $lte: new Date(endDate) }
+    }).populate('machine_id', 'manufacturing_serial_number');
+    var jk=appointments
+    if (patientID) {
+      jk = appointments.filter((app) => app.patient_id === patientID);
+    }
+    var km=jk
+    if (mid) {
+      km = jk.filter((app) => app.machine_id.manufacturing_serial_number === mid);
+    }
+    
+    console.log(km);
+    
+    // Send back the filtered appointments
+    return res.status(200).json(km);
+  } catch (error) {
+    console.error('Error fetching appointments:', error);
+    return res.status(500).json({ message: 'Error fetching appointments' });
+  }
+
+}
 

@@ -10,6 +10,7 @@ import {
   Keyboard,
   Platform,
   Text,
+  ActivityIndicator,
 } from "react-native";
 import { Button } from "react-native-paper";
 import axios from "axios";
@@ -18,10 +19,13 @@ import MyTextInput from "../widgets/textinput";
 import { getToken, storeToken } from "../store";
 import { ip } from "../constants/variables";
 import PasswordInput from "../widgets/passwordinput";
+
 function Login({ navigation }) {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(true); // Loading for token check
+  const [loginLoading, setLoginLoading] = useState(false); // Loading for login
 
   useEffect(() => {
     const checkToken = async () => {
@@ -35,31 +39,27 @@ function Login({ navigation }) {
         }
       } catch (error) {
         console.error("Failed to retrieve token:", error);
+      } finally {
+        setLoading(false); // Stop loading after token check
       }
     };
 
     checkToken();
-  }, []);
+  }, [navigation]);
 
   const handleSubmit = async () => {
-    const phoneRegex = /^[0-9]{10}$/; // Adjust this regex as per your requirements (e.g., for 10-digit numbers)
+    const phoneRegex = /^[0-9]{10}$/;
     if (!phoneRegex.test(phone)) {
-      Alert.alert(
-        "Invalid Phone Number",
-        "Please enter a valid 10-digit phone number."
-      );
+      Alert.alert("Invalid Phone Number", "Please enter a valid 10-digit phone number.");
       return;
     }
+
+    setLoginLoading(true); // Start loading for login
     try {
-      const response = await axios.post(`${ip}/staff/login`, {
-        phone,
-        password,
-      });
+      const response = await axios.post(`${ip}/staff/login`, { phone, password });
 
-      // Handle success
-      if (response.status == 200) {
-        Alert.alert("Login Successful", "You have logged in successfully");
-
+      if (response.status === 200) {
+        Alert.alert("Login Successful", "You have logged in successfully.");
         await storeToken(response.data.token);
         navigation.reset({
           index: 0,
@@ -69,22 +69,29 @@ function Login({ navigation }) {
     } catch (error) {
       console.error("Login failed:", error);
       Alert.alert("Login Failed", "Invalid Phone Number or Password");
+    } finally {
+      setLoginLoading(false); // Stop loading for login
     }
   };
+
+  if (loading) {
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView
-        style={{ flex: 1 }} // Take up the entire screen
-        behavior={Platform.OS === "ios" ? "padding" : null} // Use 'padding' for iOS, not needed for Android
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : null}
       >
-        <ScrollView
-          contentContainerStyle={styles.container}
-          keyboardShouldPersistTaps="handled" // Ensures that tapping outside the input will dismiss the keyboard
-        >
+        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
           <Image source={require("../assets/logo1.jpg")} style={styles.logos} />
 
-          <View style={styles.image}>
+          <View style={styles.imageContainer}>
             <Image
               source={require("../assets/image.jpg")}
               style={styles.logo}
@@ -101,9 +108,12 @@ function Login({ navigation }) {
             value={password}
             onChange={setPassword}
             secureTextEntry={!showPassword}
-            onTogglePassword={() => setShowPassword(!showPassword)}
+            onTogglePassword={() => setShowPassword((prev) => !prev)}
           />
-          <View style={{ width: "100%" }}>
+
+          {loginLoading ? (
+            <ActivityIndicator size="large" color={colors.primary} style={styles.loader} />
+          ) : (
             <Button
               style={styles.button}
               mode="contained"
@@ -111,17 +121,26 @@ function Login({ navigation }) {
             >
               Login
             </Button>
-          </View>
+          )}
+
           <View style={styles.newUserContainer}>
             <Text style={styles.newUserText}>New User? </Text>
             <Button
-              style={styles.regbutton}
-              mode="text" // Use text mode for a hyperlink look
+              style={styles.regButton}
+              mode="text"
               onPress={() => navigation.navigate("Signup")}
             >
               <Text style={styles.registerLink}>Register Now</Text>
             </Button>
           </View>
+
+          <Button
+            style={styles.forgotPasswordButton}
+            mode="text"
+            onPress={() => navigation.navigate("Forgot")}
+          >
+            <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+          </Button>
         </ScrollView>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
@@ -132,32 +151,8 @@ const styles = StyleSheet.create({
   container: {
     padding: 20,
     backgroundColor: colors.background,
-    color: "white",
-    justifyContent: "flex-start",
-    gap: 12,
-    flexGrow: 1, // Ensures the ScrollView takes up all available space
-  },
-  button: {
-    backgroundColor: "#22895D",
-    color: "white",
-    width: "100%",
-    padding: 5,
-    fontSize: 18,
-    borderRadius: 5,
-  },
-  logo: {
-    width: 130,
-    height: 130,
-    resizeMode: "contain",
-    alignSelf: "center",
-    marginBottom: 20,
-  },
-  image: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginTop: -70,
-    width: "100%",
+    flexGrow: 1,
+    justifyContent: "center",
   },
   logos: {
     width: 300,
@@ -166,22 +161,50 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginTop: -30,
   },
+  imageContainer: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginTop: -70,
+    width: "100%",
+  },
+  logo: {
+    width: 130,
+    height: 130,
+    resizeMode: "contain",
+    alignSelf: "center",
+    marginBottom: 20,
+  },
+  button: {
+    backgroundColor: "#22895D",
+    width: "100%",
+    padding: 5,
+    borderRadius: 5,
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: colors.background,
+  },
   newUserContainer: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    // marginTop: 5,
+    marginTop: 20,
   },
   newUserText: {
     fontSize: 16,
     color: colors.text,
   },
-  regButton: {
-    padding: 0,
-    textDecorationLine: "underline",
-    backgroundColor: "lightblue",
-  },
   registerLink: {
+    color: colors.blue,
+    fontSize: 16,
+  },
+  forgotPasswordButton: {
+    marginTop: 10,
+  },
+  forgotPasswordText: {
     color: colors.blue,
     fontSize: 16,
   },

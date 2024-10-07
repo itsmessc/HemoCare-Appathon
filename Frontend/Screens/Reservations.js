@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   Modal,
   TouchableWithoutFeedback,
+  Alert
 } from "react-native";
 import { DataTable, Appbar } from "react-native-paper";
 import axios from "axios";
@@ -127,126 +128,7 @@ const PatientMasterSheet = ({ navigation }) => {
     console.log(appointment.patient_id + "Huuulla");
     navigation.navigate("Form", { appointment }); // Assuming you have a form screen for editing
   };
-  // const renderPatientRows = () => {
-  //   return filteredPatients.map(({ patient, appointment }, index) => (
-  //     <View key={`${patient._id}-${appointment._id}`}>
-  //       {/* <TouchableOpacity onPress={() => handleRowPress(index)}>
-  //         <DataTable.Row style={styles.tableRow}>
-  //           <DataTable.Cell style={styles.cell1}>
-  //             <Text style={styles.cellText}>{patient.patient_id}</Text>
-  //           </DataTable.Cell>
-  //           <DataTable.Cell style={styles.cell2}>
-  //             <Text style={styles.cellText}>{patient.name}</Text>
-  //           </DataTable.Cell>
-  //           <DataTable.Cell style={styles.cell2}>
-  //             <Text style={styles.cellText}>
-  //               {getLocationByMachineId(appointment.machine_id)?.location}
-  //             </Text>
-  //           </DataTable.Cell>
-  //           <DataTable.Cell style={styles.cell}>
-  //             <Text style={styles.cellText}>
-  //               {formatDate(appointment.start_time)}
-  //             </Text>
-  //           </DataTable.Cell>
-  //         </DataTable.Row>
-  //       </TouchableOpacity> */}
-  //       <TouchableOpacity onPress={() => handleRowPress(index)}>
-  //         <DataTable.Row style={styles.tableRow}>
-  //           <DataTable.Cell style={styles.cell1}>
-  //             {patient.patient_id}
-  //           </DataTable.Cell>
-  //           <DataTable.Cell style={styles.cell}>{patient.name}</DataTable.Cell>
-  //           <DataTable.Cell style={styles.cell2}>
-  //             {getLocationByMachineId(appointment.machine_id)?.location}
-  //           </DataTable.Cell>
-  //           <DataTable.Cell style={styles.cell3}>
-  //             {formatDate(appointment.start_time)}
-  //           </DataTable.Cell>
-  //         </DataTable.Row>
-  //       </TouchableOpacity>
-  //       {/* Conditionally render expanded view for this row */}
-  //       {expandedRowIndex === index && (
-  //         <View style={styles.expandedView}>
-  //           <Text>Gender: {patient.gender}</Text>
-  //           <Text>Phone: {patient.phone}</Text>
-  //           <Text>
-  //             Location:{" "}
-  //             {getLocationByMachineId(appointment.machine_id)?.location}
-  //           </Text>
-  //           <Text>Appointment Day: {formatDay(appointment.start_time)}</Text>
-
-  //           {/* Edit and Delete Buttons */}
-  //           <View style={styles.buttonRow}>
-  //             <Button
-  //               title="Edit"
-  //               onPress={() => handleEdit(appointment)}
-  //               color={colors.orange}
-  //             />
-  //             <Button
-  //               title="Delete"
-  //               onPress={() => handleDelete(appointment._id)}
-  //               color={colors.red}
-  //             />
-  //           </View>
-  //         </View>
-  //       )}
-  //     </View>
-  //   ));
-  // };
-  // const renderPatientRows = () => {
-  //   return filteredPatients.map(({ patient, appointment }, index) => (
-  //     <View key={`${patient._id}-${appointment._id}`}>
-  //       <TouchableOpacity onPress={() => handleRowPress(index)}>
-  //         <DataTable.Row style={styles.tableRow}>
-  //           <DataTable.Cell style={styles.cell1}>
-  //             {patient.patient_id}
-  //           </DataTable.Cell>
-  //           <DataTable.Cell style={styles.cell}>{patient.name}</DataTable.Cell>
-  //           <DataTable.Cell style={styles.cell2}>
-  //             {getLocationByMachineId(appointment.machine_id)?.location}
-  //           </DataTable.Cell>
-  //           <DataTable.Cell style={styles.cell3}>
-  //             {formatDate(appointment.start_time)}
-  //           </DataTable.Cell>
-  //         </DataTable.Row>
-  //       </TouchableOpacity>
-
-  //       {expandedRowIndex === index && (
-  //         <View style={styles.expandedView}>
-  //           <View style={styles.patientDetails}>
-  //             <Text style={styles.detailText}>Gender: {patient.gender}</Text>
-  //             <Text style={styles.detailText}>Phone: {patient.phone}</Text>
-  //             <Text style={styles.detailText}>
-  //               Location:{" "}
-  //               {getLocationByMachineId(appointment.machine_id)?.location}
-  //             </Text>
-  //             <Text style={styles.detailText}>
-  //               Appointment Day: {formatDay(appointment.start_time)}
-  //             </Text>
-  //           </View>
-
-  //           {/* Edit and Delete Buttons with Icons */}
-  //           <View style={styles.actionRow}>
-  //             <TouchableOpacity
-  //               style={styles.actionButton}
-  //               onPress={() => handleEdit(appointment)}
-  //             >
-  //               <Text style={styles.actionText}>Edit</Text>
-  //               <Icon name="edit" size={20} color={colors.orange} />
-  //             </TouchableOpacity>
-  //             <TouchableOpacity
-  //               style={styles.actionButton}
-  //               onPress={() => handleDelete(appointment._id)}
-  //             >
-  //               <Text style={styles.actionText}>Delete</Text>
-  //               <Icon name="trash" size={20} color={colors.red} />
-  //             </TouchableOpacity>
-  //           </View>
-  //         </View>
-  //       )}
-  //     </View>
-  //   ));
-  // };
+ 
   const renderPatientRows = () => {
     return filteredPatients.map(({ patient, appointment }, index) => (
       <View key={`${patient._id}-${appointment._id}`}>
@@ -325,6 +207,7 @@ const PatientMasterSheet = ({ navigation }) => {
           }}
         />
       </Appbar.Header>
+      <ScrollView style={styles.contain} >
       <View style={styles.contain}>
         {/* Search Bar */}
         <TextInput
@@ -452,7 +335,9 @@ const PatientMasterSheet = ({ navigation }) => {
             </DataTable>
           </ScrollView>
         </ScrollView>
+        
       </View>
+      </ScrollView>
     </View>
   );
 };

@@ -1,8 +1,27 @@
 const Patient= require('../models/patient.js')
+const Counter = require('../models/counter.js')
 
-exports.addpatient=(req,res)=>{
+const getNextPatientID = async () => {
+    const counterName = 'patient_id';
+    const result = await Counter.findOneAndUpdate(
+        { name: counterName },
+        { $inc: { value: 1 } },
+        { new: true, upsert: true }
+    );
+
+    // Return the updated value as the new patient ID
+    return result.value;
+};
+
+
+exports.addpatient= async (req,res)=>{
     const {name,dob,gender,phone,patient_history,blood_group}=req.body
+
+    const patient_id = await getNextPatientID();
+    console.log("PAtiendID",patient_id);
+    
     const patient= new Patient({
+        patient_id,
         name,
         dob,
         gender,

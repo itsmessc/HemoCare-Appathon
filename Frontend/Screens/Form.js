@@ -163,6 +163,7 @@ function Form({ location = null, navigation }) {
         start_time: startTime.toISOString(),
         end_time: endTime.toISOString(),
         duration,
+        notes,
         type: isReservation ? "Reservation" : "Regular",
         recurring: { 
           enabled: isRecurring, 
@@ -261,7 +262,7 @@ function Form({ location = null, navigation }) {
         <MyTextInput
           label="Notes"
           value={notes}
-          onChangeText={setNotes}
+          onChange={(val)=>setNotes(val)}
           multiline
           style={styles.input}
         />

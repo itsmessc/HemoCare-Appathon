@@ -12,13 +12,15 @@ import Login from "./Screens/Login";
 import Register from "./Screens/Signup";
 import { OneSignal } from "react-native-onesignal";
 import axios from "axios";
-import { ip } from "./constants/variables.js";
+import { ip,ONEAPID,ONEAPI } from "./constants/variables.js";
+import AddPatientForm from "./Screens/NewPatient.js";
+import ForgotPassword from "./Screens/ForgotPassword.js"
 const Stack = createNativeStackNavigator();
 
 export default function App({}) {
   useEffect(() => {
     // OneSignal Initialization
-    OneSignal.initialize("25d4fd08-24db-4109-8f17-440d23a9a89e"); // Replace with your OneSignal App ID
+    OneSignal.initialize(ONEAPID); // Replace with your OneSignal App ID
 
     // Request permission for notifications
     OneSignal.Notifications.requestPermission(true);
@@ -61,6 +63,8 @@ export default function App({}) {
           />
           <Stack.Screen name="Form" component={Form} />
           <Stack.Screen name="Location" component={Location} />
+          <Stack.Screen name="Patient" component={AddPatientForm} />
+          <Stack.Screen name="Forgot" component={ForgotPassword} />
         </Stack.Navigator>
       </NavigationContainer>
     </MachineProvider>

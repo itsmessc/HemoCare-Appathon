@@ -7,13 +7,14 @@ const OneSignal = require('onesignal-node');
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, { cors: { origin: "*" } });
-const client = new OneSignal.Client('25d4fd08-24db-4109-8f17-440d23a9a89e','NDcxNjFlZjktOWU2OS00NjIxLTgxZDAtNjhkMDMxMzJkNThm');
-
+const env = require('dotenv');
+const client = new OneSignal.Client(process.env.ONEAPID,process.env.ONEAPI);
+env.config();
 const port = 7878;
 
 mongoose
   .connect(
-    "mongodb+srv://heycharan:8CA3WEy0czKSIyLf@appethon.5ebyw.mongodb.net/hemotrack?retryWrites=true&w=majority&appName=AppeThon",
+    process.env.DB_URL,
     { useNewUrlParser: true, useUnifiedTopology: true }
   )
   .then(() => {
@@ -30,15 +31,17 @@ const patientrouter = require("./routes/patient");
 const staffroute = require("./routes/staff");
 const appointmentroute = require("./routes/appointment");
 const machine = require("./routes/machine");
+const otp=require("./routes/otp")
 app.use("/patient", patientrouter);
 app.use("/staff", staffroute);
 app.use("/appointment", appointmentroute);
 app.use("/machine", machine);
+app.use("/otp",otp);
 app.post('/send-to-all', async (req, res) => {
   console.log("FUck you");
   
   const notification = {
-    app_id: '25d4fd08-24db-4109-8f17-440d23a9a89e', // Your OneSignal App ID
+    app_id: 'process.env.ONEAPID', // Your OneSignal App ID
     contents: { en: "Hello from OneSignal!" }, // Notification message
     included_segments: ["All"], // Send to all users
     headings: { en: "MIC testing Notification" }, // Notification title
@@ -57,7 +60,7 @@ app.post('/send-to-all', async (req, res) => {
 const Chatbox = require("./models/chatbox");
 const Machine = require("./models/machine");
 const Appointments = require("./models/appointment");
-
+const Patient=require('./models/patient');
 // WebSocket Connection
 io.on("connection", (socket) => {
   console.log("A user connected");
@@ -150,6 +153,15 @@ Machine.watch().on("change", async (change) => {
   }
 });
 
+Patient.watch().on("change",async (change)=>{
+  try{
+    const fullDocument = await Patient.findById(change.documentKey._id);
+    io.emit("patientUpdate",fullDocument);
+    console.log("Patient document updated:",fullDocument);
+  }catch(err){
+    console.error("Error fetching patient document:",err);
+  }
+})
 server.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

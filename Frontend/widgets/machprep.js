@@ -1,11 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect,useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity,Alert } from 'react-native';
 import moment from 'moment'; // Ensure you have moment.js installed
 import colors from '../constants/colors';
 import { ip } from '../constants/variables';
 import axios from 'axios';
+import {MachineContext} from '../MachineContext';
+
+
 
 const MachinePrep = ({navigation, machine, reservations }) => {
+  const [notes, setnotes] = useState('');
+const [showNotes, setShowNotes] = useState(false);
+  const {appointments} = useContext(MachineContext);
+
+  useEffect(() =>{
+    const notes = () =>{
+      const app = appointments.filter((app) => app._id === machine.appointment_id);
+      setnotes(app.length > 0 ? app[0].notes : '');
+      
+    }
+    notes()
+  },[])
+
   const [expanded, setExpanded] = useState(false);
 
   // Get current time
@@ -24,19 +40,31 @@ const MachinePrep = ({navigation, machine, reservations }) => {
 
   
 
-  const handleCancel = async (id) => {
-    try {
-        // Make a DELETE request to cancel the appointment
-        await axios.delete(`${ip}/appointment/cancelappointment/${id}`);
-
-        // Show an alert after a successful cancellation
-        Alert.alert('Cancel Appointment', `Appointment has been canceled successfully.`);
-    } catch (err) {
-        // Log the error and show an alert with error information
-        console.error('Error canceling appointment:', err);
-        Alert.alert('Cancel Appointment', `Failed to cancel appointment with ID: ${id}. Please try again later.`);
-    }
-};
+  const handleCancel = (id) => {
+    Alert.alert(
+      'Confirm Cancellation',
+      'Are you sure you want to cancel this appointment?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: async () => {
+            try {
+              await axios.delete(`${ip}/appointment/cancelappointment/${id}`);
+              Alert.alert('Cancel Appointment', 'Appointment has been canceled successfully.');
+            } catch (err) {
+              console.error('Error canceling appointment:', err);
+              Alert.alert('Cancel Appointment', `Failed to cancel appointment with ID: ${id}. Please try again later.`);
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
 const startmachine = async () => {
     try{
         console.log(machine._id+"Hell YEah");
@@ -98,6 +126,22 @@ const startmachine = async () => {
           })}
         </View>
       )} */}
+      <View style={styles.notesContainer}>
+        <TouchableOpacity 
+          style={styles.notesButton} 
+          onPress={() => setShowNotes((prev) => !prev)}
+        >
+          <Text style={styles.notesButtonText}>
+            {showNotes ? 'Hide Notes' : 'Show Notes'}
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {showNotes && (
+        <View style={styles.notesDisplay}>
+          <Text>{notes}</Text>
+        </View>
+      )}
     </View>
   );
 };
@@ -115,6 +159,37 @@ const styles = StyleSheet.create({
     elevation: 5,
     marginBottom: 10,
     marginTop: 2,
+  },
+   notesContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  notesButton: {
+    backgroundColor: 'transparent', // No background
+    padding: 5,
+  },
+  notesButtonText: {
+    color: colors.blue, // Change color as needed
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  notesDisplay: {
+    marginTop: 5,
+    padding: 5,
+    borderTopWidth: 1,
+    borderTopColor: '#E0E0E0',
+  },
+  cancelbutton: {
+    backgroundColor: 'red', // No background
+    padding: 5,
+    borderRadius:5
+  },
+  cancelbuttonte: {
+    color: colors.white, // Change color as needed
+    fontSize: 14,
+    fontWeight: '600',
   },
   infoContainer: {
     flexDirection: 'row',

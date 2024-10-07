@@ -6,7 +6,8 @@ import Chat from "../Screens/Chat";
 import { Ionicons } from "react-native-vector-icons"; // Import the icon library
 import Reservations from "../Screens/Reservations";
 import colors from "../constants/colors";
-import DemoScreen from "../Screens/DemoScreen";
+
+import RepScreen from "../Screens/Report";
 
 const Tab = createBottomTabNavigator();
 
@@ -23,11 +24,13 @@ const BottomTabNavigator = () => {
             iconName = "chatbubbles"; // Example icon name
           } else if (route.name === "Reservations") {
             iconName = "calendar";
+          } else if (route.name === "Report") {
+            iconName = "document";
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: "#008080", // Color for active tab
+        tabBarActiveTintColor: colors.teal, // Color for active tab
         tabBarInactiveTintColor: colors.darkgrey, // Color for inactive tabs
         tabBarLabelStyle: { fontSize: 12 }, // Label styling
         tabBarStyle: {
@@ -47,11 +50,8 @@ const BottomTabNavigator = () => {
         component={Chat}
         options={{ headerShown: false }}
       />
-      <Tab.Screen
-        name="Reservations"
-        component={Reservations}
-        options={{ headerShown: false }}
-      />
+      <Tab.Screen name="Reservations" component={Reservations} options={{ headerShown: false }} />
+      <Tab.Screen name="Report" component={RepScreen} />
     </Tab.Navigator>
   );
 };

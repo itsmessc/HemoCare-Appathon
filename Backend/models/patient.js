@@ -10,6 +10,7 @@ const PatientSchema = new mongoose.Schema({
     previous_dialysis: { type: [String], default: [] },
     last_dialysis_date: { type: Date }
   },
+  
   blood_group: { type: String, required: true },
   nextappointment:{
     date:{type:Date},
