@@ -3,6 +3,8 @@ import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system';
 import { Alert } from 'react-native';
 import {useState} from 'react'
+import Constants from "expo-constants";
+const ip = Constants.expoConfig.extra.ip;
 export const generatePDF = async (appointments) => {
   console.log(appointments);
   if (!appointments.length) {

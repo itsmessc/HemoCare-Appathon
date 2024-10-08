@@ -10,10 +10,12 @@ import DateTimePickerComponent from '../widgets/datepicker'; // Assume this is y
 import MyTextInput from '../widgets/textinput'; // Text input for filtering if needed
 import Dropdown from '../widgets/dropdown'; // Dropdown component
 import {patients, MachineContext } from '../MachineContext'; // Assuming you have a context for machines
-import { ip } from '../constants/variables'; // Your API endpoint
+// import { ip } from '../constants/variables'; // Your API endpoint
 import axios from 'axios';
 import { generatePDF } from '../utils/pdfGenerator'; // Utility function for PDF generation
 import PatientSearchBar from "../widgets/patient_search_bar";
+import Constants from "expo-constants";
+const ip = Constants.expoConfig.extra.ip;
 function RepScreen({ navigation }) {
   const { machines,patients } = useContext(MachineContext); // Get machines from context
   const [startDate, setStartDate] = useState(new Date());
@@ -41,6 +43,7 @@ function RepScreen({ navigation }) {
       ).flat(); // Flatten the array of arrays
       setMachineOptions(options);
     }
+    // console.log("IPPPPPP"+Constants.expoConfig.extra.ip);
   }, [machines]);
 
   const fetchAppointments = async () => {

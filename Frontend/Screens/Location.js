@@ -5,6 +5,9 @@ import MachineOcc from "../widgets/machoccupied"; // Ensure the correct import p
 import MachineVacant from "../widgets/machvacant"; // Ensure the correct import path
 import { MachineContext } from "../MachineContext";
 import MachinePrep from "../widgets/machprep";
+import colors from "../constants/colors";
+import Constants from "expo-constants";
+const ip = Constants.expoConfig.extra.ip;
 
 const Location = ({ navigation }) => {
   const route = useRoute(); // Get route object
@@ -18,7 +21,7 @@ const Location = ({ navigation }) => {
     navigation.setOptions({
       title: headerTitle,
       headerStyle: {
-        backgroundColor: "#4B70F5", // Example color, adjust as needed
+        backgroundColor: colors.teal, // Example color, adjust as needed
       },
       headerTintColor: "#fff",
       headerTitleStyle: {

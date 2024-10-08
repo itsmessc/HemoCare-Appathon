@@ -3,6 +3,8 @@ import Dashboard from "./Dashboard";
 import { StyleSheet, Button } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import MyAppBar from "../widgets/appbar";
+import Constants from "expo-constants";
+const ip = Constants.expoConfig.extra.ip;
 
 function LandingPage({ navigation }) {
   return (

@@ -17,8 +17,10 @@ import axios from "axios";
 import colors from "../constants/colors";
 import MyTextInput from "../widgets/textinput";
 import { getToken, storeToken } from "../store";
-import { ip } from "../constants/variables";
+// import { ip } from "../constants/variables";
 import PasswordInput from "../widgets/passwordinput";
+import Constants from "expo-constants";
+const ip = Constants.expoConfig.extra.ip;
 
 function Login({ navigation }) {
   const [phone, setPhone] = useState("");

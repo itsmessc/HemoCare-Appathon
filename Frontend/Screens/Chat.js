@@ -19,13 +19,16 @@ import {
   storeToken,
 } from "../store";
 import { jwtDecode } from "jwt-decode";
-import { ip } from "../constants/variables";
+// import { ip } from "../constants/variables";
+
 import { Picker } from "@react-native-picker/picker";
 import { Appbar } from "react-native-paper";
 import { MachineContext } from "../MachineContext";
 import colors from "../constants/colors";
 import { Ionicons } from "@expo/vector-icons";
 
+import Constants from "expo-constants";
+const ip = Constants.expoConfig.extra.ip;
 // Connect to the WebSocket server
 const socket = io(ip); // Replace with your server address
 

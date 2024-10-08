@@ -12,15 +12,17 @@ import Login from "./Screens/Login";
 import Register from "./Screens/Signup";
 import { OneSignal } from "react-native-onesignal";
 import axios from "axios";
-import { ip,ONEAPID,ONEAPI } from "./constants/variables.js";
+// import { ip,ONEAPID,ONEAPI } from "./constants/variables.js";
 import AddPatientForm from "./Screens/NewPatient.js";
 import ForgotPassword from "./Screens/ForgotPassword.js"
 const Stack = createNativeStackNavigator();
 
+import Constants from "expo-constants";
+const ip = Constants.expoConfig.extra.ip;
 export default function App({}) {
   useEffect(() => {
     // OneSignal Initialization
-    OneSignal.initialize(ONEAPID); // Replace with your OneSignal App ID
+    OneSignal.initialize(Constants.expoConfig.extra.ONEAPID); // Replace with your OneSignal App ID
 
     // Request permission for notifications
     OneSignal.Notifications.requestPermission(true);

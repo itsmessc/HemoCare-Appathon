@@ -15,7 +15,9 @@ import { Button } from "react-native-paper";
 import axios from "axios";
 import colors from "../constants/colors";
 import PasswordInput from "../widgets/passwordinput";
-import { ip } from "../constants/variables";
+// import { ip } from "../constants/variables";
+import Constants from "expo-constants";
+const ip = Constants.expoConfig.extra.ip;
 import MyTextInput from "../widgets/textinput";
 
 function Register({ navigation }) {

@@ -10,13 +10,14 @@ import {
   TouchableOpacity,
   Modal,
   TouchableWithoutFeedback,
-  Alert
 } from "react-native";
 import { DataTable, Appbar } from "react-native-paper";
 import axios from "axios";
 import moment from "moment";
 import { Picker } from "@react-native-picker/picker";
-import { ip } from "../constants/variables";
+// import { ip } from "../constants/variables";
+import Constants from "expo-constants";
+const ip = Constants.expoConfig.extra.ip;
 import { MachineContext } from "../MachineContext";
 import colors from "../constants/colors"; // Assuming your colors are defined in constants/colors.js
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -128,7 +129,126 @@ const PatientMasterSheet = ({ navigation }) => {
     console.log(appointment.patient_id + "Huuulla");
     navigation.navigate("Form", { appointment }); // Assuming you have a form screen for editing
   };
- 
+  // const renderPatientRows = () => {
+  //   return filteredPatients.map(({ patient, appointment }, index) => (
+  //     <View key={`${patient._id}-${appointment._id}`}>
+  //       {/* <TouchableOpacity onPress={() => handleRowPress(index)}>
+  //         <DataTable.Row style={styles.tableRow}>
+  //           <DataTable.Cell style={styles.cell1}>
+  //             <Text style={styles.cellText}>{patient.patient_id}</Text>
+  //           </DataTable.Cell>
+  //           <DataTable.Cell style={styles.cell2}>
+  //             <Text style={styles.cellText}>{patient.name}</Text>
+  //           </DataTable.Cell>
+  //           <DataTable.Cell style={styles.cell2}>
+  //             <Text style={styles.cellText}>
+  //               {getLocationByMachineId(appointment.machine_id)?.location}
+  //             </Text>
+  //           </DataTable.Cell>
+  //           <DataTable.Cell style={styles.cell}>
+  //             <Text style={styles.cellText}>
+  //               {formatDate(appointment.start_time)}
+  //             </Text>
+  //           </DataTable.Cell>
+  //         </DataTable.Row>
+  //       </TouchableOpacity> */}
+  //       <TouchableOpacity onPress={() => handleRowPress(index)}>
+  //         <DataTable.Row style={styles.tableRow}>
+  //           <DataTable.Cell style={styles.cell1}>
+  //             {patient.patient_id}
+  //           </DataTable.Cell>
+  //           <DataTable.Cell style={styles.cell}>{patient.name}</DataTable.Cell>
+  //           <DataTable.Cell style={styles.cell2}>
+  //             {getLocationByMachineId(appointment.machine_id)?.location}
+  //           </DataTable.Cell>
+  //           <DataTable.Cell style={styles.cell3}>
+  //             {formatDate(appointment.start_time)}
+  //           </DataTable.Cell>
+  //         </DataTable.Row>
+  //       </TouchableOpacity>
+  //       {/* Conditionally render expanded view for this row */}
+  //       {expandedRowIndex === index && (
+  //         <View style={styles.expandedView}>
+  //           <Text>Gender: {patient.gender}</Text>
+  //           <Text>Phone: {patient.phone}</Text>
+  //           <Text>
+  //             Location:{" "}
+  //             {getLocationByMachineId(appointment.machine_id)?.location}
+  //           </Text>
+  //           <Text>Appointment Day: {formatDay(appointment.start_time)}</Text>
+
+  //           {/* Edit and Delete Buttons */}
+  //           <View style={styles.buttonRow}>
+  //             <Button
+  //               title="Edit"
+  //               onPress={() => handleEdit(appointment)}
+  //               color={colors.orange}
+  //             />
+  //             <Button
+  //               title="Delete"
+  //               onPress={() => handleDelete(appointment._id)}
+  //               color={colors.red}
+  //             />
+  //           </View>
+  //         </View>
+  //       )}
+  //     </View>
+  //   ));
+  // };
+  // const renderPatientRows = () => {
+  //   return filteredPatients.map(({ patient, appointment }, index) => (
+  //     <View key={`${patient._id}-${appointment._id}`}>
+  //       <TouchableOpacity onPress={() => handleRowPress(index)}>
+  //         <DataTable.Row style={styles.tableRow}>
+  //           <DataTable.Cell style={styles.cell1}>
+  //             {patient.patient_id}
+  //           </DataTable.Cell>
+  //           <DataTable.Cell style={styles.cell}>{patient.name}</DataTable.Cell>
+  //           <DataTable.Cell style={styles.cell2}>
+  //             {getLocationByMachineId(appointment.machine_id)?.location}
+  //           </DataTable.Cell>
+  //           <DataTable.Cell style={styles.cell3}>
+  //             {formatDate(appointment.start_time)}
+  //           </DataTable.Cell>
+  //         </DataTable.Row>
+  //       </TouchableOpacity>
+
+  //       {expandedRowIndex === index && (
+  //         <View style={styles.expandedView}>
+  //           <View style={styles.patientDetails}>
+  //             <Text style={styles.detailText}>Gender: {patient.gender}</Text>
+  //             <Text style={styles.detailText}>Phone: {patient.phone}</Text>
+  //             <Text style={styles.detailText}>
+  //               Location:{" "}
+  //               {getLocationByMachineId(appointment.machine_id)?.location}
+  //             </Text>
+  //             <Text style={styles.detailText}>
+  //               Appointment Day: {formatDay(appointment.start_time)}
+  //             </Text>
+  //           </View>
+
+  //           {/* Edit and Delete Buttons with Icons */}
+  //           <View style={styles.actionRow}>
+  //             <TouchableOpacity
+  //               style={styles.actionButton}
+  //               onPress={() => handleEdit(appointment)}
+  //             >
+  //               <Text style={styles.actionText}>Edit</Text>
+  //               <Icon name="edit" size={20} color={colors.orange} />
+  //             </TouchableOpacity>
+  //             <TouchableOpacity
+  //               style={styles.actionButton}
+  //               onPress={() => handleDelete(appointment._id)}
+  //             >
+  //               <Text style={styles.actionText}>Delete</Text>
+  //               <Icon name="trash" size={20} color={colors.red} />
+  //             </TouchableOpacity>
+  //           </View>
+  //         </View>
+  //       )}
+  //     </View>
+  //   ));
+  // };
   const renderPatientRows = () => {
     return filteredPatients.map(({ patient, appointment }, index) => (
       <View key={`${patient._id}-${appointment._id}`}>
@@ -168,14 +288,14 @@ const PatientMasterSheet = ({ navigation }) => {
                 onPress={() => handleEdit(appointment)}
               >
                 <Text style={styles.actionText}>Edit</Text>
-                <Icon name="edit" size={20} color={colors.orange} />
+                <Icon name="edit" size={20} color={colors.white} />
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.actionButton2}
                 onPress={() => handleDelete(appointment._id)}
               >
                 <Text style={styles.actionText}>Delete</Text>
-                <Icon name="trash" size={20} color={colors.black} />
+                <Icon name="trash" size={20} color={colors.white} />
               </TouchableOpacity>
             </View>
           </View>
@@ -194,6 +314,7 @@ const PatientMasterSheet = ({ navigation }) => {
   }
 
   return (
+    <ScrollView horizontal={false} vertical={true}> 
     <View style={styles.container}>
       {/* App Bar with Heading */}
       <Appbar.Header style={styles.appbars}>
@@ -207,7 +328,6 @@ const PatientMasterSheet = ({ navigation }) => {
           }}
         />
       </Appbar.Header>
-      <ScrollView style={styles.contain} >
       <View style={styles.contain}>
         {/* Search Bar */}
         <TextInput
@@ -299,8 +419,8 @@ const PatientMasterSheet = ({ navigation }) => {
         {/* Data Table */}
         <ScrollView
           horizontal={false}
+          vertical={true}
           showsHorizontalScrollIndicator={false}
-          showsVerticalScrollIndicator={false}
         >
           <ScrollView showsVerticalScrollIndicator={false}>
             {/* <DataTable style={styles.dataTable}> */}
@@ -335,24 +455,25 @@ const PatientMasterSheet = ({ navigation }) => {
             </DataTable>
           </ScrollView>
         </ScrollView>
-        
       </View>
-      </ScrollView>
     </View>
+    </ScrollView>
   );
 };
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.white,
+    height: "100%",
   },
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    
   },
   filterButton: {
-    backgroundColor: colors.blue, // Apply color here
+    backgroundColor: colors.teal, // Apply color here
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8, // Rounded corners
@@ -413,12 +534,13 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   tableHeader: {
+    // backgroundColor: "#50ccca",
     backgroundColor: colors.lightblue,
     borderTopRightRadius: 8,
     borderTopLeftRadius: 8,
   },
   tableRow: {
-    backgroundColor: colors.lightgray, // Row background color
+    backgroundColor: colors.grey, // Row background color
     justifyContent: "center",
     alignItems: "center",
     borderBottomWidth: 2, // Optional: adds a bottom border to each row
@@ -456,23 +578,21 @@ const styles = StyleSheet.create({
     minWidth: 90, // Set a reasonable minimum width for columns
     marginLeft: -5,
   },
-  expandedView: {
-    padding: 10,
-    backgroundColor: colors.expandedRowBackground,
-    borderBottomWidth: 1,
-    borderColor: colors.border,
-  },
+  // expandedView: {
+  //   padding: 10,
+  //   backgroundColor: colors.expandedRowBackground,
+  //   borderBottomWidth: 1,
+  //   borderColor: colors.border,
+  // },
   dataTable: {
     width: "100%", // Reduce width to 95% of screen
   },
-  // expandedView: {
-  //   padding: 12,
-  //   backgroundColor: colors.lightblue, // Add a background color for better visibility
-  //   borderBottomWidth: 1,
-  //   borderColor: colors.border,
-  //   borderRadius: 8, // Add some rounding to the corners
-  //   marginTop: 5, // Add some space between rows
-  // },
+  expandedView: {
+    padding: 12,
+    backgroundColor: colors.white, // Add a background color for better visibility
+    borderWidth: 2, // Add a border
+    borderColor: colors.darkgrey,
+  },
   patientDetails: {
     marginBottom: 10,
   },
@@ -490,7 +610,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 10,
     borderRadius: 8,
-    backgroundColor: colors.blue, // Button background color
+    backgroundColor: colors.teal, // Button background color
     // borderColor: colors.gray, // Border color
     // borderWidth: 1, // Border thickness
   },
@@ -505,7 +625,7 @@ const styles = StyleSheet.create({
   },
   actionText: {
     marginRight: 5,
-    color: colors.darkGray,
+    color: colors.white,
     fontWeight: "bold",
   },
 });

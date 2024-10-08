@@ -41,7 +41,7 @@ async function testOneSignal(location,name,message) {
 const client = new OneSignal.Client({
   app: {
     appAuthKey: process.env.ONEAPI, // Your OneSignal API Key
-    appId: process.env.ONEAPID.trim() // Your OneSignal App ID
+    appId: process.env.ONEAPID// Your OneSignal App ID
   }
 });
 

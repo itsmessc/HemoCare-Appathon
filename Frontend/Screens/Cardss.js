@@ -2,6 +2,8 @@ import React from "react";
 import { Text, View, StyleSheet, Image } from "react-native";
 import Chart from "../widgets/chart";
 import colors from "../constants/colors";
+import Constants from "expo-constants";
+const ip = Constants.expoConfig.extra.ip;
 function Cards({ locationData, locationName }) {
   // chart here
   const total = locationData.length;

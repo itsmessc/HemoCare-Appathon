@@ -40,7 +40,9 @@
       ]
     ],
     "extra": {
-      "oneSignalAppId": "11fcff57-a8a6-4fd3-a5b5-2b40480b2d74",
+      "ip":"http://192.168.90.31:7878",
+      "ONEAPID": "25d4fd08-24db-4109-8f17-440d23a9a89e",
+      "ONEAPI":"NDcxNjFlZjktOWU2OS00NjIxLTgxZDAtNjhkMDMxMzJkNThm",
       "eas": {
         "projectId": "b0b0333f-64c1-4f0f-b5ff-8a0264a13954"
       }

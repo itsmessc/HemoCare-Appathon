@@ -14,7 +14,9 @@ import colors from "../constants/colors";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Button } from "react-native-paper";
 import axios from "axios";
-import { ip } from "../constants/variables"; // Your API endpoint
+// import { ip } from "../constants/variables"; // Your API endpoint
+import Constants from "expo-constants";
+const ip = Constants.expoConfig.extra.ip;
 
 function AddPatientForm({ navigation }) {
   const [name, setName] = useState("");

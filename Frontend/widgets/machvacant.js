@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import moment from 'moment'; // Ensure you have moment.js installed
+import colors from "../constants/colors";
+import Constants from "expo-constants";
+const ip = Constants.expoConfig.extra.ip;
 
 const MachineVacant = ({navigation, machine, reservations }) => {
   const [expanded, setExpanded] = useState(false);
@@ -125,7 +128,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   button: {
-    backgroundColor: '#007BFF',
+    backgroundColor: colors.teal,
     borderRadius: 4,
     paddingVertical: 8,
     paddingHorizontal: 12,

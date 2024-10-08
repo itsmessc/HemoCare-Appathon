@@ -3,6 +3,8 @@ import { Text, View, Button, Platform } from 'react-native';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
+import Constants from "expo-constants";
+const ip = Constants.expoConfig.extra.ip;
 
 // Set notification handler
 Notifications.setNotificationHandler({

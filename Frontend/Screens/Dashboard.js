@@ -13,6 +13,8 @@ import { removeToken } from "../store";
 import colors from "../constants/colors";
 import { Ionicons } from "@expo/vector-icons"; // Make sure to install this package
 
+import Constants from "expo-constants";
+const ip = Constants.expoConfig.extra.ip;
 function Dashboard({ navigation }) {
   const [data, setData] = useState({
     total: 0,

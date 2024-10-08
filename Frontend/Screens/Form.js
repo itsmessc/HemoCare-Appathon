@@ -15,9 +15,11 @@ import Dropdown from "../widgets/dropdown";
 import { Button } from "react-native-paper";
 import { MachineContext } from "../MachineContext";
 import axios from "axios";
-import { ip } from "../constants/variables";
+// import { ip } from "../constants/variables";
 import { useRoute } from "@react-navigation/native";
 import PatientSearchBar from "../widgets/patient_search_bar";
+import Constants from "expo-constants";
+const ip = Constants.expoConfig.extra.ip;
 
 function Form({ location = null, navigation }) {
   const route = useRoute();

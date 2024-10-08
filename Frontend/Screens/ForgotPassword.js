@@ -12,9 +12,11 @@ import {
 } from "react-native";
 import { Button } from "react-native-paper";
 import MyTextInput from "../widgets/textinput"; // Assuming you have this component
-import { ip } from "../constants/variables";
+// import { ip } from "../constants/variables";
 import axios from "axios";
 import colors from "../constants/colors";
+import Constants from "expo-constants";
+const ip = Constants.expoConfig.extra.ip;
 
 const ForgotPassword = ({ navigation }) => {
   const [email, setEmail] = useState("");

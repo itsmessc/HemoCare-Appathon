@@ -1,6 +1,8 @@
 import React, { createContext, useState, useEffect } from "react";
 import io from "socket.io-client";
-import { ip } from "./constants/variables";
+// import { ip } from "./constants/variables";
+import Constants from "expo-constants";
+const ip = Constants.expoConfig.extra.ip;
 
 // Set up the socket connection
 const socket = io(ip);

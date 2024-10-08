@@ -1,7 +1,9 @@
 import React, { useEffect, useState, useContext } from "react";
 import { View, Text, StyleSheet, TextInput, Button, Alert } from "react-native";
 import axios from "axios";
-import { ip } from "../constants/variables";
+// import { ip } from "../constants/variables";
+import Constants from "expo-constants";
+const ip = Constants.expoConfig.extra.ip;
 import { MachineContext } from "../MachineContext";
 import colors from "../constants/colors";
 
