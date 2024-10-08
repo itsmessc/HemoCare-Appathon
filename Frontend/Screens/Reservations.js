@@ -200,7 +200,7 @@ const PatientMasterSheet = ({ navigation }) => {
     <View style={styles.container}>
       {/* App Bar with Heading */}
       <Appbar.Header style={styles.appbars}>
-        <Appbar.Action icon="home" color="#fff" />
+        <Appbar.Action icon="calendar" color="#fff" />
         <Appbar.Content
           title="Reservation"
           titleStyle={{
