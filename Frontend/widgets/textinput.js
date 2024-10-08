@@ -20,12 +20,12 @@ export default function MyTextInput({
         selectionColor={colors.teal}
         cursorColor={colors.teal}
         activeOutlineColor={colors.teal}
-        outlineColor={colors.green}
+        outlineColor={colors.teal}
         onChangeText={onChange}
         onFocus={onFocus}
         onBlur={onBlur}
         borderColor={colors.teal}
-        style={{ borderColor: colors.teal , marginBottom:10}}
+        style={{ borderColor: colors.teal, marginBottom: 10 }}
       />
     </View>
   );

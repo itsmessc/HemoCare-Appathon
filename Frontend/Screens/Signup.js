@@ -118,11 +118,7 @@ function Register({ navigation }) {
             state={bloodGroup}
             onChange={setBloodGroup}
           />
-          <MyTextInput
-            label="Email"
-            state={email}
-            onChange={setEmail}
-          />
+          <MyTextInput label="Email" state={email} onChange={setEmail} />
 
           <PasswordInput
             label="Password"
@@ -185,7 +181,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 25,
     fontWeight: "bold",
-    color: colors.darkgreen,
+    color: colors.teal,
     marginBottom: 25,
   },
   buttonContainer: {
@@ -193,7 +189,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   button: {
-    backgroundColor: colors.darkgreen,
+    backgroundColor: colors.teal,
     paddingVertical: 5,
     borderRadius: 10,
   },

@@ -52,13 +52,19 @@ function Login({ navigation }) {
   const handleSubmit = async () => {
     const phoneRegex = /^[0-9]{10}$/;
     if (!phoneRegex.test(phone)) {
-      Alert.alert("Invalid Phone Number", "Please enter a valid 10-digit phone number.");
+      Alert.alert(
+        "Invalid Phone Number",
+        "Please enter a valid 10-digit phone number."
+      );
       return;
     }
 
     setLoginLoading(true); // Start loading for login
     try {
-      const response = await axios.post(`${ip}/staff/login`, { phone, password });
+      const response = await axios.post(`${ip}/staff/login`, {
+        phone,
+        password,
+      });
 
       if (response.status === 200) {
         Alert.alert("Login Successful", "You have logged in successfully.");
@@ -90,7 +96,10 @@ function Login({ navigation }) {
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : null}
       >
-        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+        <ScrollView
+          contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled"
+        >
           <Image source={require("../assets/logo1.jpg")} style={styles.logos} />
 
           <View style={styles.imageContainer}>
@@ -114,7 +123,11 @@ function Login({ navigation }) {
           />
 
           {loginLoading ? (
-            <ActivityIndicator size="large" color={colors.primary} style={styles.loader} />
+            <ActivityIndicator
+              size="large"
+              color={colors.teal}
+              style={styles.loader}
+            />
           ) : (
             <Button
               style={styles.button}
@@ -178,7 +191,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   button: {
-    backgroundColor: "#22895D",
+    backgroundColor: colors.teal,
     width: "100%",
     padding: 5,
     borderRadius: 5,

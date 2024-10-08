@@ -130,7 +130,7 @@ const PatientMasterSheet = ({ navigation }) => {
     navigation.navigate("Form", { appointment }); // Assuming you have a form screen for editing
   };
   //   return filteredPatients.map(({ patient, appointment }, index) => (
-    // const renderPatientRows = () => {
+  // const renderPatientRows = () => {
   //     <View key={`${patient._id}-${appointment._id}`}>
   //       {/* <TouchableOpacity onPress={() => handleRowPress(index)}>
   //         <DataTable.Row style={styles.tableRow}>
@@ -314,118 +314,125 @@ const PatientMasterSheet = ({ navigation }) => {
   }
 
   return (
-    <ScrollView horizontal={false} vertical={true}> 
-    <View style={styles.container}>
-      {/* App Bar with Heading */}
-      <Appbar.Header style={styles.appbars}>
-        <Appbar.Action icon="home" color="#fff" />
-        <Appbar.Content
-          title="Reservation"
-          titleStyle={{
-            color: colors.white,
-            fontFamily: "sans-serif",
-            fontWeight: "bold",
-          }}
-        />
-      </Appbar.Header>
-      <View style={styles.contain}>
-        {/* Search Bar */}
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search by ID or Name"
-          value={searchQuery}
-          onChangeText={(text) => setSearchQuery(text)}
-        />
-        {/* Filter Button */}
-        <TouchableOpacity
-          style={styles.filterButton}
-          onPress={toggleModal}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.filterButtonText}>Filter</Text>
-        </TouchableOpacity>
-        {/* Modal acting as a bottom drawer */}
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={isModalVisible}
-          onRequestClose={toggleModal}
-        >
-          <TouchableWithoutFeedback onPress={toggleModal}>
-            <View style={styles.modalOverlay}>
-              <View style={styles.modalContent}>
-                <Text style={styles.modalHeader}>Filter Patients</Text>
+    <ScrollView horizontal={false} vertical={true}>
+      <View style={styles.container}>
+        {/* App Bar with Heading */}
+        <Appbar.Header style={styles.appbars}>
+          <Appbar.Action icon="home" color="#fff" />
+          <Appbar.Content
+            title="Reservation"
+            titleStyle={{
+              color: colors.white,
+              fontFamily: "sans-serif",
+              fontWeight: "bold",
+            }}
+          />
+        </Appbar.Header>
+        <View style={styles.contain}>
+          {/* Search Bar */}
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search by ID or Name"
+            value={searchQuery}
+            onChangeText={(text) => setSearchQuery(text)}
+          />
+          {/* Filter Button */}
+          <TouchableOpacity
+            style={styles.filterButton}
+            onPress={toggleModal}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.filterButtonText}>Filter</Text>
+          </TouchableOpacity>
+          {/* Modal acting as a bottom drawer */}
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={isModalVisible}
+            onRequestClose={toggleModal}
+          >
+            <TouchableWithoutFeedback onPress={toggleModal}>
+              <View style={styles.modalOverlay}>
+                <View style={styles.modalContent}>
+                  <Text style={styles.modalHeader}>Filter Patients</Text>
 
-                {/* Filter Options */}
-                <Picker
-                  selectedValue={selectedMonth}
-                  onValueChange={(itemValue) => setSelectedMonth(itemValue)}
-                  style={styles.picker}
-                >
-                  <Picker.Item label="Select Month" value="" />
-                  <Picker.Item label="January" value="01" />
-                  <Picker.Item label="February" value="02" />
-                  <Picker.Item label="March" value="03" />
-                  <Picker.Item label="April" value="04" />
-                  <Picker.Item label="May" value="05" />
-                  <Picker.Item label="June" value="06" />
-                  <Picker.Item label="July" value="07" />
-                  <Picker.Item label="August" value="08" />
-                  <Picker.Item label="September" value="09" />
-                  <Picker.Item label="October" value="10" />
-                  <Picker.Item label="November" value="11" />
-                  <Picker.Item label="December" value="12" />
-                </Picker>
+                  {/* Filter Options */}
+                  <Picker
+                    selectedValue={selectedMonth}
+                    onValueChange={(itemValue) => setSelectedMonth(itemValue)}
+                    style={styles.picker}
+                  >
+                    <Picker.Item label="Select Month" value="" />
+                    <Picker.Item label="January" value="01" />
+                    <Picker.Item label="February" value="02" />
+                    <Picker.Item label="March" value="03" />
+                    <Picker.Item label="April" value="04" />
+                    <Picker.Item label="May" value="05" />
+                    <Picker.Item label="June" value="06" />
+                    <Picker.Item label="July" value="07" />
+                    <Picker.Item label="August" value="08" />
+                    <Picker.Item label="September" value="09" />
+                    <Picker.Item label="October" value="10" />
+                    <Picker.Item label="November" value="11" />
+                    <Picker.Item label="December" value="12" />
+                  </Picker>
 
-                <Picker
-                  selectedValue={selectedDay}
-                  onValueChange={(itemValue) => setSelectedDay(itemValue)}
-                  style={styles.picker}
-                >
-                  <Picker.Item label="Select Day" value="" />
-                  <Picker.Item label="Monday" value="Monday" />
-                  <Picker.Item label="Tuesday" value="Tuesday" />
-                  <Picker.Item label="Wednesday" value="Wednesday" />
-                  <Picker.Item label="Thursday" value="Thursday" />
-                  <Picker.Item label="Friday" value="Friday" />
-                  <Picker.Item label="Saturday" value="Saturday" />
-                  <Picker.Item label="Sunday" value="Sunday" />
-                </Picker>
+                  <Picker
+                    selectedValue={selectedDay}
+                    onValueChange={(itemValue) => setSelectedDay(itemValue)}
+                    style={styles.picker}
+                  >
+                    <Picker.Item label="Select Day" value="" />
+                    <Picker.Item label="Monday" value="Monday" />
+                    <Picker.Item label="Tuesday" value="Tuesday" />
+                    <Picker.Item label="Wednesday" value="Wednesday" />
+                    <Picker.Item label="Thursday" value="Thursday" />
+                    <Picker.Item label="Friday" value="Friday" />
+                    <Picker.Item label="Saturday" value="Saturday" />
+                    <Picker.Item label="Sunday" value="Sunday" />
+                  </Picker>
 
-                <Picker
-                  selectedValue={selectedLocation}
-                  onValueChange={(itemValue) => setSelectedLocation(itemValue)}
-                  style={styles.picker}
-                >
-                  <Picker.Item label="Select Location" value="" />
-                  <Picker.Item label="VIP" value="VIP" />
-                  <Picker.Item label="Manipal" value="Manipal" />
-                  <Picker.Item label="ISU" value="ISU" />
-                  <Picker.Item label="OPD" value="OPD" />
-                </Picker>
+                  <Picker
+                    selectedValue={selectedLocation}
+                    onValueChange={(itemValue) =>
+                      setSelectedLocation(itemValue)
+                    }
+                    style={styles.picker}
+                  >
+                    <Picker.Item label="Select Location" value="" />
+                    <Picker.Item label="VIP" value="VIP" />
+                    <Picker.Item label="Manipal" value="Manipal" />
+                    <Picker.Item label="ISU" value="ISU" />
+                    <Picker.Item label="OPD" value="OPD" />
+                  </Picker>
 
-                {/* Clear Filters Button */}
-                <Button
-                  title="Clear Filters"
-                  onPress={clearFilters}
-                  color={colors.red}
-                />
-                {/* Close Modal */}
-                <Button title="Close" onPress={toggleModal} />
+                  {/* Close Modal */}
+                  <Button
+                    title="Done"
+                    onPress={toggleModal}
+                    color={colors.teal}
+                  />
+                  <View style={{ height: 10 }} />
+                  {/* Clear Filters Button */}
+                  <Button
+                    title="Clear Filters"
+                    onPress={clearFilters}
+                    color={colors.red}
+                  />
+                </View>
               </View>
-            </View>
-          </TouchableWithoutFeedback>
-        </Modal>
-        {/* Data Table */}
-        <ScrollView
-          horizontal={false}
-          vertical={true}
-          showsHorizontalScrollIndicator={false}
-        >
-          <ScrollView showsVerticalScrollIndicator={false}>
-            {/* <DataTable style={styles.dataTable}> */}
-            <DataTable style={styles.dataTable}>
-              {/* <DataTable.Header style={styles.tableHeader}>
+            </TouchableWithoutFeedback>
+          </Modal>
+          {/* Data Table */}
+          <ScrollView
+            horizontal={false}
+            vertical={true}
+            showsHorizontalScrollIndicator={false}
+          >
+            <ScrollView showsVerticalScrollIndicator={false}>
+              {/* <DataTable style={styles.dataTable}> */}
+              <DataTable style={styles.dataTable}>
+                {/* <DataTable.Header style={styles.tableHeader}>
                 <DataTable.Title style={[styles.cell1, styles.tableHeaderCell]}>
                   Patient ID
                 </DataTable.Title>
@@ -439,24 +446,26 @@ const PatientMasterSheet = ({ navigation }) => {
                   Appointment Date
                 </DataTable.Title>
               </DataTable.Header> */}
-              <DataTable.Header style={styles.tableHeader}>
-                <DataTable.Title style={styles.cell1}>
-                  Patient ID
-                </DataTable.Title>
-                <DataTable.Title style={styles.cell}>Name</DataTable.Title>
-                <DataTable.Title style={styles.cell2}>Location</DataTable.Title>
-                <DataTable.Title style={styles.cell3}>
-                  Appointment Date
-                </DataTable.Title>
-              </DataTable.Header>
+                <DataTable.Header style={styles.tableHeader}>
+                  <DataTable.Title style={styles.cell1}>
+                    Patient ID
+                  </DataTable.Title>
+                  <DataTable.Title style={styles.cell}>Name</DataTable.Title>
+                  <DataTable.Title style={styles.cell2}>
+                    Location
+                  </DataTable.Title>
+                  <DataTable.Title style={styles.cell3}>
+                    Appointment Date
+                  </DataTable.Title>
+                </DataTable.Header>
 
-              {/* Render the rows with expand/collapse functionality */}
-              {renderPatientRows()}
-            </DataTable>
+                {/* Render the rows with expand/collapse functionality */}
+                {renderPatientRows()}
+              </DataTable>
+            </ScrollView>
           </ScrollView>
-        </ScrollView>
+        </View>
       </View>
-    </View>
     </ScrollView>
   );
 };
@@ -470,7 +479,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    
   },
   filterButton: {
     backgroundColor: colors.teal, // Apply color here

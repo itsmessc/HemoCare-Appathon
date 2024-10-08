@@ -40,7 +40,7 @@
       ]
     ],
     "extra": {
-      "ip":"http://192.168.90.31:7878",
+      "ip":"http://192.168.0.105:7878",
       "ONEAPID": "25d4fd08-24db-4109-8f17-440d23a9a89e",
       "ONEAPI":"NDcxNjFlZjktOWU2OS00NjIxLTgxZDAtNjhkMDMxMzJkNThm",
       "eas": {

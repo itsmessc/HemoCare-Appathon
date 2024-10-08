@@ -46,9 +46,15 @@ const ForgotPassword = ({ navigation }) => {
 
   const handleVerifyOtp = async () => {
     try {
-      const response = await axios.post(`${ip}/otp/validateotp`, { email, otp });
+      const response = await axios.post(`${ip}/otp/validateotp`, {
+        email,
+        otp,
+      });
       if (response.status === 200) {
-        Alert.alert("Success", "OTP verified. You can now reset your password.");
+        Alert.alert(
+          "Success",
+          "OTP verified. You can now reset your password."
+        );
         setStep(3); // Move to reset password step
       }
     } catch (error) {
@@ -59,12 +65,18 @@ const ForgotPassword = ({ navigation }) => {
 
   const handleResetPassword = async () => {
     if (newPassword.length < 6) {
-      Alert.alert("Invalid Password", "Password must be at least 6 characters long.");
+      Alert.alert(
+        "Invalid Password",
+        "Password must be at least 6 characters long."
+      );
       return;
     }
 
     try {
-      const response = await axios.post(`${ip}/otp/update`, { email, newPassword });
+      const response = await axios.post(`${ip}/otp/update`, {
+        email,
+        newPassword,
+      });
       if (response.status === 200) {
         Alert.alert("Success", "Your password has been reset.");
         navigation.navigate("Login"); // Redirect to login screen
@@ -94,11 +106,7 @@ const ForgotPassword = ({ navigation }) => {
 
           {step === 1 && (
             <View>
-              <MyTextInput
-                label="Email"
-                state={email}
-                onChange={setEmail}
-              />
+              <MyTextInput label="Email" state={email} onChange={setEmail} />
               <Button
                 mode="contained"
                 style={styles.button}
@@ -111,11 +119,7 @@ const ForgotPassword = ({ navigation }) => {
 
           {step === 2 && (
             <View>
-              <MyTextInput
-                label="Enter OTP"
-                state={otp}
-                onChange={setOtp}
-              />
+              <MyTextInput label="Enter OTP" state={otp} onChange={setOtp} />
               <Button
                 mode="contained"
                 style={styles.button}
@@ -159,7 +163,8 @@ const ForgotPassword = ({ navigation }) => {
           )}
 
           <Button
-            mode="text"
+            mode="outlined"
+            styles={{ color: colors.teal }}
             onPress={() => navigation.navigate("Login")}
           >
             Back to Login
@@ -182,9 +187,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 20,
     textAlign: "center",
+    color: colors.teal,
   },
   button: {
-    marginTop: 10,
+    marginVertical: 10,
     backgroundColor: colors.teal,
   },
   linkButton: {
