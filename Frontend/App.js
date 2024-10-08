@@ -65,7 +65,7 @@ export default function App({}) {
           />
           <Stack.Screen name="Form" component={Form} />
           <Stack.Screen name="Location" component={Location} />
-          <Stack.Screen name="Patient" component={AddPatientForm} />
+          <Stack.Screen name="Patient" component={AddPatientForm} options={{ headerShown: false }}/>
           <Stack.Screen name="Forgot" component={ForgotPassword} />
         </Stack.Navigator>
       </NavigationContainer>

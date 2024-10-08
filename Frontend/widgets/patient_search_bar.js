@@ -29,7 +29,6 @@ const PatientSearchBar = ({ data, set }) => {
     }, 100), // Ensure the closing parenthesis is here
     [data] // Dependency array should be outside the debounce function
   );
-  
 
   const handleSuggestionPress = (suggestion) => {
     const [name, patientId] = suggestion.split('-'); // Split the suggestion to get patient_id
@@ -37,8 +36,7 @@ const PatientSearchBar = ({ data, set }) => {
     set(patientId.trim()); // Send the patient_id to the set function
     setSuggestions([]); // Clear suggestions
     console.log("Selected patient_id: ", patientId);
-};
-
+  };
 
   return (
     <View style={styles.container}>
@@ -46,7 +44,7 @@ const PatientSearchBar = ({ data, set }) => {
         style={styles.input}
         value={searchText}
         onChangeText={handleSearch}
-        placeholder="Search..."
+        placeholder="Search Patient..."
       />
 
       {suggestions.length > 0 && (
@@ -73,6 +71,9 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: "white",
     color: colors.darkgreen,
+    borderColor: colors.teal, // Set border color to green
+    borderWidth: 2,            // Ensure the border is visible
+    borderRadius: 5, 
   },
   suggestionContainer: {
     zIndex: 2,
@@ -87,7 +88,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderRadius: 5,
     borderBottomWidth: 1,
-    borderColor: colors.darkgreen,
+    borderColor: colors.teal, // Changed border color to teal
   },
   suggestionText: {
     paddingHorizontal: 10,

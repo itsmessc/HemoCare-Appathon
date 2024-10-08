@@ -312,7 +312,7 @@ const MachineOcc = ({ machine }) => {
         progress={progress}
         width={null}
         height={10}
-        color="#4B70F5"
+        color={colors.teal}
         unfilledColor="#E0E0E0"
         borderWidth={0}
         style={styles.progressBar}
@@ -320,14 +320,19 @@ const MachineOcc = ({ machine }) => {
 
       {/* Notes Toggle Button */}
       <View style={styles.notesContainer}>
-        <TouchableOpacity 
+        {/* <TouchableOpacity 
           style={styles.notesButton} 
           onPress={() => setShowNotes((prev) => !prev)}
         >
           <Text style={styles.notesButtonText}>
             {showNotes ? 'Hide Notes' : 'Show Notes'}
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
+        <View>
+        <Text style={styles.timeText}>
+          {remainingTime} Left
+        </Text>
+        </View>
         <TouchableOpacity 
           style={styles.cancelbutton} 
           onPress={() => handleCancel(machine.appointment_id)}
@@ -337,7 +342,16 @@ const MachineOcc = ({ machine }) => {
           </Text>
         </TouchableOpacity>
       </View>
-
+      <View style={styles.notesContainer}>
+        <TouchableOpacity 
+          style={styles.notesButton} 
+          onPress={() => setShowNotes((prev) => !prev)}
+        >
+          <Text style={styles.notesButtonText}>
+            {showNotes ? 'Hide Notes' : 'Show Notes'}
+          </Text>
+        </TouchableOpacity>
+      </View>
       {showNotes && (
         <View style={styles.notesDisplay}>
           <Text>{notes}</Text>
@@ -388,6 +402,7 @@ const styles = StyleSheet.create({
   notesButton: {
     backgroundColor: 'transparent',
     padding: 5,
+    paddingLeft: 0,
   },
   notesButtonText: {
     color: colors.teal,
@@ -406,6 +421,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 12,
     alignItems: 'center',
+    marginTop: 5,
   },
   cancelbuttonte: {
     color: '#fff',

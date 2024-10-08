@@ -17,13 +17,15 @@ export default function MyTextInput({
         label={label ?? ""}
         mode="outlined"
         value={state}
-        selectionColor={colors.darkgreen}
-        cursorColor={colors.darkgreen}
-        activeOutlineColor={colors.darkgreen}
+        selectionColor={colors.teal}
+        cursorColor={colors.teal}
+        activeOutlineColor={colors.teal}
         outlineColor={colors.green}
         onChangeText={onChange}
         onFocus={onFocus}
         onBlur={onBlur}
+        borderColor={colors.teal}
+        style={{ borderColor: colors.teal , marginBottom:10}}
       />
     </View>
   );

@@ -132,7 +132,13 @@ exports.addappointment = async (req, res) => {
 
 exports.getappointments = async (req,res)=>{
   try{
-    const appointments= await Appointment.find({type:"Reservation",start_time:{$gt: new Date()}});
+    const appointments = await Appointment.find({
+      $or: [
+        { type: "Reservation" },
+        { type: "Preparing" }
+      ],
+      start_time: { $gt: new Date() }
+    });
     res.json(appointments);
   }
   catch(error){
@@ -212,7 +218,7 @@ async function sendnoti (head,content){
   }
 }
 
-cron.schedule('*/1 * * * *', async () => {
+cron.schedule('*/30 * * * * *', async () => {
   console.log('hello');
   
   

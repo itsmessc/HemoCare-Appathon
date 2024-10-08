@@ -6,7 +6,7 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
-  Switch
+  Switch,
 } from "react-native";
 import MyTextInput from "../widgets/textinput";
 import colors from "../constants/colors";
@@ -15,10 +15,10 @@ import Dropdown from "../widgets/dropdown";
 import { Button } from "react-native-paper";
 import { MachineContext } from "../MachineContext";
 import axios from "axios";
-// import { ip } from "../constants/variables";
 import { useRoute } from "@react-navigation/native";
 import PatientSearchBar from "../widgets/patient_search_bar";
 import Constants from "expo-constants";
+
 const ip = Constants.expoConfig.extra.ip;
 
 function Form({ location = null, navigation }) {
@@ -28,7 +28,7 @@ function Form({ location = null, navigation }) {
   const [machineList, setMachineList] = useState([]);
   const [patientID, setPatientID] = useState("");
   const [notes, setNotes] = useState("");
-  const editing=route.params.appointment ? route.params.appointment : "";
+  const editing = route.params.appointment ? route.params.appointment : "";
   const [hours, setHours] = useState(null);
   const [minutes, setMinutes] = useState(null);
   const [locationID, setLocationID] = useState(location);
@@ -76,28 +76,24 @@ function Form({ location = null, navigation }) {
         value: machine._id,
         status: machine.status,
       }));
-  
       setMachineList(machineOptions);
     } else {
       setMachineList([]);
     }
-  
-    
   }, [locationID, machines, editing]);
   
-  useEffect(()=>{
-    if (editing!=="") {
+  useEffect(() => {
+    if (editing !== "") {
       setPatientID(editing.patient_id);
       setNotes(editing.notes);
       setDateTime(new Date(editing.start_time));
       setEndtime(editing.end_time);
-  
+
       // Parse duration
       const duration = parseFloat(editing.duration);
-      console.log(duration+"hhe")
       setHours(Math.floor(duration));
       setMinutes(Math.round((duration % 1) * 100));
-  
+
       for (const loc in machines) {
         const foundMachine = machines[loc].find(
           (machine) => machine._id === editing.machine_id
@@ -109,13 +105,13 @@ function Form({ location = null, navigation }) {
         }
       }
     }
-  },[editing])
+  }, [editing]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: "Form",
+      title: "Add Appointment",
       headerStyle: {
-        backgroundColor: colors.darkgreen,
+        backgroundColor: colors.teal,
       },
       headerTintColor: colors.white,
       headerTitleStyle: {
@@ -129,55 +125,54 @@ function Form({ location = null, navigation }) {
       alert("Please fill out all required fields.");
       return;
     }
-  
+
     const duration = `${hours || 0}.${minutes || 0}`;
     const startTime = new Date(dateTime);
     const endTime = new Date(startTime);
     if (hours) endTime.setHours(endTime.getHours() + hours);
     if (minutes) endTime.setMinutes(endTime.getMinutes() + minutes);
-  
+
     // Buffer times
     const bufferTime = 60 * 60 * 1000; // 1 hour in milliseconds
     const bufferedStartTime = new Date(startTime.getTime() - bufferTime);
     const bufferedEndTime = new Date(endTime.getTime() + bufferTime);
-  
+
     // Step 2: Check for conflicts in existing appointments
     const conflicts = appointments.filter(appointment => 
       appointment.machine_id === machineID &&
       new Date(appointment.start_time) < bufferedEndTime &&
       new Date(appointment.end_time) > bufferedStartTime
     );
-  
+
     if (conflicts.length > 0) {
       // Step 3: Show an alert with details of the conflicting appointments
       const conflictDetails = conflicts.map(app => 
-        `ID: ${app._id}, Patient: ${app.patient_id}, Start: ${new Date(app.start_time).toLocaleString()}, End: ${new Date(app.end_time).toLocaleString()}`
+        ` Patient: ${app.patient_id}, Start: ${new Date(app.start_time).toLocaleString()}, End: ${new Date(app.end_time).toLocaleString()}`
       ).join('\n');
       alert(`Conflicting Appointments:\n${conflictDetails}`);
       return; // Stop submission
     }
-  
+
     // Step 4: If no conflicts, proceed to submit the appointment
     try {
-      if (editing==''){await axios.post(`${ip}/appointment/addappointment`, {
-        patient_id: patientID,
-        machine_id: machineID,
-        start_time: startTime.toISOString(),
-        end_time: endTime.toISOString(),
-        duration,
-        notes,
-        type: isReservation ? "Reservation" : "Regular",
-        recurring: { 
-          enabled: isRecurring, 
-          days: Object.keys(selectedDays).filter(day => selectedDays[day])
-        }
-      });
-  
-      alert("Appointment added successfully");}
-      else{
-        console.log("GG")
+      if (editing === '') {
+        await axios.post(`${ip}/appointment/addappointment`, {
+          patient_id: patientID,
+          machine_id: machineID,
+          start_time: startTime.toISOString(),
+          end_time: endTime.toISOString(),
+          duration,
+          notes,
+          type: isReservation ? "Reservation" : "Regular",
+          recurring: { 
+            enabled: isRecurring, 
+            days: Object.keys(selectedDays).filter(day => selectedDays[day])
+          }
+        });
+        alert("Appointment added successfully");
+      } else {
         await axios.post(`${ip}/appointment/update`, { 
-          _id:editing._id,
+          _id: editing._id,
           patient_id: patientID,
           machine_id: machineID,
           start_time: startTime.toISOString(),
@@ -185,7 +180,6 @@ function Form({ location = null, navigation }) {
           duration,
           type: isReservation ? "Reservation" : "Regular",
         });
-        
         alert("Appointment updated successfully");
       }
       navigation.navigate("Dashboard");
@@ -194,7 +188,6 @@ function Form({ location = null, navigation }) {
       alert("Error submitting appointment. Please try again.");
     }
   }
-  
 
   const handleDayChange = (day) => {
     setSelectedDays((prev) => ({ ...prev, [day]: !prev[day] }));
@@ -203,43 +196,46 @@ function Form({ location = null, navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {editing == '' && (
+        {editing === '' && (
           <PatientSearchBar data={patients} set={setPatientID} />
         )}
         <Text style={styles.patientIDText}>Patient ID: {patientID}</Text>
 
-        <DateTimePickerComponent
-          title="Select Date and Time"
-          dateTime={dateTime}
-          setDateTime={setDateTime}
-        />
-
-        <Text style={styles.label}>Duration</Text>
-        <View style={styles.row}>
-          <MyTextInput
-            label="Hrs"
-            state={( hours??"").toString()}
-            onChange={(val) => setHours(isNaN(parseInt(val, 10)) ? null : parseInt(val, 10))}
-            style={styles.input}
+        <View style={styles.card}>
+          <Text style={styles.sectionTitle}>Appointment Details</Text>
+          <DateTimePickerComponent
+            title="Select Date and Time"
+            dateTime={dateTime}
+            setDateTime={setDateTime}
           />
-          <View style={styles.width20} />
-          <MyTextInput
-            label="Mins"
-            state={(minutes ?? "").toString()}
-            onChange={(val) => setMinutes(isNaN(parseInt(val, 10)) ? null : parseInt(val, 10))}
-            style={styles.input}
-          />
-        </View>
-        <Text style={styles.endTimeText}>End Time: {new Date(endtime).toLocaleString()}</Text>
-
-        {isReservation && (editing=='') && (
+          <Text style={styles.label}>Duration</Text>
           <View style={styles.row}>
+            <MyTextInput
+              label="Hrs"
+              state={(hours ?? "").toString()}
+              onChange={(val) => setHours(isNaN(parseInt(val, 10)) ? null : parseInt(val, 10))}
+              style={styles.input}
+            />
+            <View style={styles.width20} />
+            <MyTextInput
+              label="Mins"
+              state={(minutes ?? "").toString()}
+              onChange={(val) => setMinutes(isNaN(parseInt(val, 10)) ? null : parseInt(val, 10))}
+              style={styles.input}
+            />
+          </View>
+          <Text style={styles.endTimeText}>End Time: {new Date(endtime).toLocaleString()}</Text>
+        </View>
+        {isReservation && (editing=='') && (
+        <View style={styles.card}>
+        {isReservation && (editing=='') && (
+          <View style={styles.row1}>
             <Text style={styles.label}>Recurring for month:</Text>
             <Switch
               value={isRecurring}
               onValueChange={() => setIsRecurring((prev) => !prev)}
-              trackColor={{ false: colors.lightGray, true: colors.darkgreen }}
-              thumbColor={isRecurring ? colors.white : colors.gray}
+              trackColor={{ false: colors.lightGray, true: colors.teal }}
+              thumbColor={isRecurring ? colors.teal : "gray"}
               ios_backgroundColor={colors.lightGray}
               style={styles.switch}
             />
@@ -260,16 +256,21 @@ function Form({ location = null, navigation }) {
             ))}
           </View>
         )}
+        </View>)}
 
-        <MyTextInput
-          label="Notes"
-          value={notes}
-          onChange={(val)=>setNotes(val)}
-          multiline
-          style={styles.input}
-        />
+        <View style={styles.card}>
+          <Text style={styles.label}>Notes</Text>
+          <MyTextInput
+            label="Notes"
+            state={notes}
+            onChange={setNotes}
+            multiline={true}
+            style={styles.notesInput}
+          />
+        </View>
 
-        <View>
+        <View style={styles.card}>
+          <Text style={styles.label}>Location</Text>
           <Dropdown
             label="Select location"
             placeholder={{ label: "Select Location", value: null }}
@@ -286,23 +287,14 @@ function Form({ location = null, navigation }) {
           />
         </View>
 
-        <View style={styles.buttonContainer}>
-          <Button
-            style={styles.cancelButton}
-            labelStyle={{ color: colors.black }}
-            mode="outlined"
-            onPress={() => navigation.navigate("Dashboard")}
-          >
-            Cancel
-          </Button>
-          <Button
-            style={styles.submitButton}
-            mode="contained"
-            onPress={onSubmit}
-          >
-            Submit
-          </Button>
-        </View>
+        <Button
+          mode="contained"
+          onPress={onSubmit}
+          style={styles.submitButton}
+          labelStyle={styles.submitButtonLabel}
+        >
+          {editing ? "Update Appointment" : "Create Appointment"}
+        </Button>
       </ScrollView>
     </SafeAreaView>
   );
@@ -311,53 +303,96 @@ function Form({ location = null, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: colors.white,
   },
   scrollContainer: {
     padding: 20,
+    justifyContent: "space-between",
   },
-  patientIDText: {
-    fontWeight: "bold",
-    fontSize: 20,
-    marginVertical: 10,
-    color: colors.darkgreen,
+  card: {
+    backgroundColor: colors.lightgray,
+    borderRadius: 8,
+    padding: 15,
+    marginVertical: 5,
+    shadowColor: colors.black,
+    shadowOffset: { width: 0, height: 0.5 },
+    shadowOpacity: 0.1,
+    shadowRadius: 1.0,
+    elevation: 2,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color:colors.teal
   },
   label: {
-    fontWeight: "600",
     fontSize: 16,
-    marginVertical: 5,
-    color: colors.darkgreen,
-  },
-  endTimeText: {
-    marginTop: 10,
-    fontSize: 16,
-    color: colors.darkgreen,
-  },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 5,
-  },
-  width20: {
-    width: 5,
+    marginBottom: 5,
+    color: colors.teal,
+    fontWeight: "bold",
   },
   input: {
     flex: 1,
+    marginHorizontal: 5,
+  },
+  endTimeText: {
+    fontSize: 16,
+    color: colors.teal,
+    marginTop: 10,
+    fontWeight: "bold",
+  },
+  width20: {
+    width: 20,
+  },
+  notesInput: {
+    height: 100,
+  },
+  switchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginVertical: 5,
+  },
+  switchLabel: {
+    fontSize: 16,
+  },
+  submitButton: {
+    marginTop: 20,
+    backgroundColor: colors.teal,
+  },
+  submitButtonLabel: {
+    fontSize: 18,
+  },
+  patientIDText: {
+    fontSize: 16,
+    marginVertical: 10,
+    color: colors.teal,
+    fontWeight: "bold",
+  },
+  row1: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 2,
+    justifyContent: "space-between",
   },
   dayToggleContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
     marginVertical: 5,
+    
   },
   dayToggleButton: {
-    padding: 8,
+    padding: 2,
+    paddingVertical: 5,
     borderRadius: 5,
-    margin: 5,
+    margin: 3,
     backgroundColor: colors.lightgray,
     alignItems: "center",
+    width:90
   },
   activeButton: {
-    backgroundColor: colors.darkgreen,
+    backgroundColor: colors.teal,
   },
   inactiveButton: {
     backgroundColor: colors.lightgray,
@@ -369,25 +404,6 @@ const styles = StyleSheet.create({
   },
   blacktext: {
     color: colors.black,
-  },
-  toggleButton: {
-    padding: 10,
-    borderRadius: 5,
-    marginLeft: 10,
-    alignItems: "center",
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 20,
-  },
-  cancelButton: {
-    backgroundColor: colors.white,
-    borderColor: colors.darkgreen,
-    borderWidth: 1,
-  },
-  submitButton: {
-    backgroundColor: colors.darkgreen,
   },
 });
 

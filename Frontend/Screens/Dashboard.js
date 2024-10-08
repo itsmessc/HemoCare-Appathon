@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     width: "94%",
     paddingVertical: 8,
     borderRadius: 8,
-    marginBottom: 20,
+    marginBottom: 15,
   },
   cardsContainer: {
     width: "100%",

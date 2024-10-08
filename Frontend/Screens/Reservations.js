@@ -129,8 +129,8 @@ const PatientMasterSheet = ({ navigation }) => {
     console.log(appointment.patient_id + "Huuulla");
     navigation.navigate("Form", { appointment }); // Assuming you have a form screen for editing
   };
-  // const renderPatientRows = () => {
   //   return filteredPatients.map(({ patient, appointment }, index) => (
+    // const renderPatientRows = () => {
   //     <View key={`${patient._id}-${appointment._id}`}>
   //       {/* <TouchableOpacity onPress={() => handleRowPress(index)}>
   //         <DataTable.Row style={styles.tableRow}>

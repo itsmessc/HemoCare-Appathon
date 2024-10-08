@@ -51,7 +51,7 @@ const BottomTabNavigator = () => {
         options={{ headerShown: false }}
       />
       <Tab.Screen name="Reservations" component={Reservations} options={{ headerShown: false }} />
-      <Tab.Screen name="Report" component={RepScreen} />
+      <Tab.Screen name="Report" component={RepScreen} options={{ headerShown: false }}/>
     </Tab.Navigator>
   );
 };

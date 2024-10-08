@@ -41,13 +41,13 @@ const DateTimePickerComponent = ({ dateTime, setDateTime, title }) => {
     <View style={styles.container}>
       <Text style={styles.text}>{title}</Text>
       <Button
-        color={colors.darkgreen}
+        color={colors.teal}
         onPress={showDatePicker}
         title={dateTime.toLocaleString()} // Display both date and time
       />
       {showDate && (
         <DateTimePicker
-          accentColor={colors.darkgreen}
+          accentColor={colors.teal}
           value={dateTime}
           mode="date"
           display="default"
@@ -56,6 +56,7 @@ const DateTimePickerComponent = ({ dateTime, setDateTime, title }) => {
       )}
       {showTime && (
         <DateTimePicker
+          accentColor={colors.teal}
           value={dateTime}
           mode="time"
           display="default"

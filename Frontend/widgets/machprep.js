@@ -451,6 +451,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent', // No background
     padding: 5,
     marginTop: -8,
+    paddingLeft: 0,
   },
   notesButtonText: {
     color: colors.teal, // Change color as needed

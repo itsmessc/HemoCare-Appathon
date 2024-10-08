@@ -4,8 +4,9 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  View,
 } from 'react-native';
-import { Button } from 'react-native-paper';
+import { Button ,Appbar} from 'react-native-paper';
 import DateTimePickerComponent from '../widgets/datepicker'; // Assume this is your date picker component
 import MyTextInput from '../widgets/textinput'; // Text input for filtering if needed
 import Dropdown from '../widgets/dropdown'; // Dropdown component
@@ -15,6 +16,8 @@ import axios from 'axios';
 import { generatePDF } from '../utils/pdfGenerator'; // Utility function for PDF generation
 import PatientSearchBar from "../widgets/patient_search_bar";
 import Constants from "expo-constants";
+import colors from "../constants/colors";
+import { Ionicons } from "react-native-vector-icons";
 const ip = Constants.expoConfig.extra.ip;
 function RepScreen({ navigation }) {
   const { machines,patients } = useContext(MachineContext); // Get machines from context
@@ -32,6 +35,8 @@ function RepScreen({ navigation }) {
     
   // }, []);
 
+
+  
   useEffect(() => {
     // Prepare machine options for dropdown
     if (machines) {
@@ -73,7 +78,19 @@ function RepScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
+      <Appbar.Header style={styles.appbars}>
+        <Appbar.Action icon={()=><Ionicons name="document" size={24} color="#fff"/>} />
+        <Appbar.Content
+          title="Report"
+          titleStyle={{
+            color: colors.white,
+            fontFamily: "sans-serif",
+            fontWeight: "bold",
+          }}
+        />
+      </Appbar.Header>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
+      
         <Text style={styles.title}>Generate Appointment Report</Text>
 
         <DateTimePickerComponent
@@ -93,17 +110,20 @@ function RepScreen({ navigation }) {
           onChange={setPatientID}
           style={styles.input}
         /> */}
-        <Text style={styles.patientIDText}>Patient ID: (optional)</Text>
+        <Text style={styles.patientIDText}>Patient ID:</Text>
 
         <PatientSearchBar data={patients} set={setPatientID} />
 
-        <Dropdown
-          label="Select Machine ID"
+
+      <View style={styles.dropdownWrapper}>
+      <Text style={styles.dropdownLabel}>Machine ID</Text>
+      <Dropdown
           placeholder={{ label: "Select Machine", value: null }}
           options={machineOptions}
           value={machineID}
           onValueChange={setMachineID}
         />
+      </View>
 
         <Button
           mode="contained"
@@ -121,21 +141,46 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f8f8f8',
+    justifyContent: 'center',
+    alignContent: 'center',
   },
   scrollContainer: {
     padding: 20,
   },
   title: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
     marginBottom: 20,
     color: '#333',
+    alignContent: 'center',
+    justifyContent: 'center',
   },
   input: {
     marginBottom: 20,
   },
   button: {
-    marginTop: 20,
+    backgroundColor: colors.teal,
+    width: "100%",
+    paddingVertical: 6,
+    borderRadius: 8,
+    marginBottom: 15,
+  },
+  appbars: {
+    backgroundColor: "#008080",
+    color: colors.teal,
+  },
+  patientIDText:{
+    marginBottom:10,
+    marginTop:10,
+  },
+  dropdownWrapper: {
+    marginBottom: 10, // Optional: space below the whole dropdown block
+  },
+  dropdownLabel: {
+    fontSize: 14,
+    color: 'black',
+    marginBottom: -15, // Space between label and dropdown
+    marginTop:20,
   },
 });
 

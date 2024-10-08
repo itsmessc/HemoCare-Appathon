@@ -12,10 +12,12 @@ import MyTextInput from "../widgets/textinput";
 import Dropdown from "../widgets/dropdown"; // Import your dropdown component
 import colors from "../constants/colors";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { Button } from "react-native-paper";
+import { Button,Appbar } from "react-native-paper";
 import axios from "axios";
 // import { ip } from "../constants/variables"; // Your API endpoint
 import Constants from "expo-constants";
+import { Ionicons } from "react-native-vector-icons";
+
 const ip = Constants.expoConfig.extra.ip;
 
 function AddPatientForm({ navigation }) {
@@ -64,6 +66,18 @@ function AddPatientForm({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
+      <Appbar.Header style={styles.appbars}>
+      <Appbar.Action icon={()=><Ionicons name="person" size={24} color="#fff"/>} />
+
+        <Appbar.Content
+          title="Patient"
+          titleStyle={{
+            color: colors.white,
+            fontFamily: "sans-serif",
+            fontWeight: "bold",
+          }}
+        />
+      </Appbar.Header>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Text style={styles.header}>Add New Patient</Text>
         <MyTextInput label="Name" value={name} onChange={(val)=>setName(val)} />
@@ -90,15 +104,17 @@ function AddPatientForm({ navigation }) {
           />
         )}
 
-        <Dropdown
-          label="Gender"
-          placeholder={{ label: "Select Gender", value: null }}
-          options={genderOptions}
-          value={gender}
-          onValueChange={setGender}
-        />
+<View style={styles.dropdownWrapper}>
+  <Text style={styles.dropdownLabel}>Gender</Text>
+  <Dropdown
+    placeholder={{ label: "Select Gender", value: null }}
+    options={genderOptions}
+    value={gender}
+    onValueChange={setGender}
+  />
+</View>
         
-        <MyTextInput label="Phone" value={phone} onChange={(val)=>setPhone(val)} />
+        <MyTextInput style={styles.label} label="Phone" value={phone} onChange={(val)=>setPhone(val)} />
         <MyTextInput label="Blood Group" value={bloodGroup} onChange={(val)=>setBloodGroup(val)} />
 
         <View style={styles.buttonContainer}>
@@ -106,6 +122,7 @@ function AddPatientForm({ navigation }) {
             style={styles.cancelButton}
             mode="outlined"
             onPress={() => navigation.navigate("Dashboard")}
+            labelStyle={{ color: colors.teal }}
           >
             Cancel
           </Button>
@@ -130,33 +147,52 @@ const styles = StyleSheet.create({
   scrollContainer: {
     padding: 20,
   },
+  appbars: {
+    backgroundColor: "#008080",
+    color: colors.teal,
+  },
   header: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 20,
+    marginBottom: 15,
     color: colors.teal,
   },
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 20,
+    marginTop: 15,
   },
   cancelButton: {
     backgroundColor: colors.white,
     borderColor: colors.teal,
     borderWidth: 1,
   },
+  dropdownWrapper: {
+    marginBottom: 10, // Optional: space below the whole dropdown block
+  },
+  dropdownLabel: {
+    fontSize: 16,
+    color: 'black',
+    marginBottom: -20, // Space between label and dropdown
+  },
+  label: {
+    marginBottom: 30,
+  },
   submitButton: {
     backgroundColor:colors.teal,
+
   },
   dateInput: {
-    width: '100%', // Occupy 100% width
+    // width: '100%', // Occupy 100% width
     padding: 10,
-    borderWidth: 1,
-    borderColor: colors.lightGray, // Customize based on your theme
-    borderRadius: 5,
-    alignItems: 'center', // Center items horizontally
-    justifyContent: 'center', // Center items verticall
+    marginTop:7,
+    // borderWidth: 1,
+    // borderColor: colors.lightGray, // Customize based on your theme
+    // borderRadius: 20,
+    marginBottom:15,
+    // alignItems: 'center', // Center items horizontally
+    // justifyContent: 'center', // Center items verticall
+
     backgroundColor:colors.teal,
     
   },
@@ -169,6 +205,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'black', 
     marginTop:10
+  },
+  button: {
+    marginTop: 20,
+    backgroundColor:colors.teal
   },
 });
 
