@@ -28,14 +28,14 @@ export default function App({}) {
     OneSignal.Notifications.requestPermission(true);
 
     // Fetch Player ID when the device is registered
-    OneSignal.User.getOnesignalId().then((userId) => {
-      if (userId) {
-        setPlayerId(userId);
-        console.log("OneSignal Player ID:", userId);
-      } else {
-        console.error("User ID not found. User may not be subscribed.");
-      }
-    });
+    // OneSignal.User.getOnesignalId().then((userId) => {
+    //   if (userId) {
+    //     setPlayerId(userId);
+    //     console.log("OneSignal Player ID:", userId);
+    //   } else {
+    //     console.error("User ID not found. User may not be subscribed.");
+    //   }
+    // });
     // axios.post(`${ip}/send-to-all`);
 
     // Handle notification opened

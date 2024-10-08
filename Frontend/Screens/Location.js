@@ -7,6 +7,8 @@ import { MachineContext } from "../MachineContext";
 import MachinePrep from "../widgets/machprep";
 import colors from "../constants/colors";
 import Constants from "expo-constants";
+import { Ionicons } from "@expo/vector-icons"; // Make sure to install this package
+
 const ip = Constants.expoConfig.extra.ip;
 
 const Location = ({ navigation }) => {
@@ -54,56 +56,72 @@ const Location = ({ navigation }) => {
   const occupiedMachines = data.filter(
     (machine) => machine.status === "Occupied"
   );
+  const preparingMachines = data.filter((machine) => machine.status === "Preparing");
 
   const total = data.length;
   const vacant = vacantMachines.length;
   const occupied = occupiedMachines.length;
-
+  const preparing = preparingMachines.length;
   return (
     <View style={styles.outerContainer}>
       <View style={styles.container}>
-        <View style={styles.box}>
-          <View
-            style={[
-              styles.boxeinside,
-              {
-                backgroundColor: "#4B70F5",
-                width: 100,
-                height: 100,
-              },
-            ]}
-          >
-            <Text style={styles.texts}>Total</Text>
-            <Text style={[styles.texts, styles.number]}>{total}</Text>
+      <View style={styles.gridContainer}>
+            <View style={[styles.summaryBox, { backgroundColor: "#4B70F5" }]}>
+              <Ionicons
+                name="bar-chart"
+                size={35}
+                color="white"
+                style={styles.icon}
+              />
+              <View style={styles.textContainer}>
+                <Text style={styles.texts}>Total</Text>
+                <Text style={[styles.texts, styles.number]}>{total}</Text>
+              </View>
+            </View>
+            <View
+              style={[styles.summaryBox, { backgroundColor: colors.green }]}
+            >
+              <Ionicons
+                name="checkmark-circle"
+                size={35}
+                color="white"
+                style={styles.icon}
+              />
+              <View style={styles.textContainer}>
+                <Text style={styles.texts}>Vacant</Text>
+                <Text style={[styles.texts, styles.number]}>{vacant}</Text>
+              </View>
+            </View>
+            <View style={[styles.summaryBox, { backgroundColor: "#E63946" }]}>
+              <Ionicons
+                name="alert-circle"
+                size={35}
+                color="white"
+                style={styles.icon}
+              />
+              <View style={styles.textContainer}>
+                <Text style={styles.texts}>Occupied</Text>
+                <Text style={[styles.texts, styles.number]}>
+                  {occupied}
+                </Text>
+              </View>
+            </View>
+            <View style={[styles.summaryBox, { backgroundColor: "#ff8c00" }]}>
+              <Ionicons
+                name="time"
+                size={35}
+                color="white"
+                style={styles.icon}
+              />
+              <View style={styles.textContainer}>
+                <Text style={styles.texts}>Preparing</Text>
+                <Text style={[styles.texts, styles.number]}>
+                  {preparing}
+                </Text>
+              </View>
+            </View>
           </View>
-          <View
-            style={[
-              styles.boxeinside,
-              {
-                backgroundColor: "#3E9837",
-                width: 100,
-                height: 100,
-              },
-            ]}
-          >
-            <Text style={styles.texts}>Vacant</Text>
-            <Text style={[styles.texts, styles.number]}>{vacant}</Text>
           </View>
-          <View
-            style={[
-              styles.boxeinside,
-              {
-                backgroundColor: "#E63946",
-                width: 100,
-                height: 100,
-              },
-            ]}
-          >
-            <Text style={styles.texts}>Occupied</Text>
-            <Text style={[styles.texts, styles.number]}>{occupied}</Text>
-          </View>
-        </View>
-      </View>
 
       {/* Combine the two lists into one FlatList */}
       <FlatList
@@ -158,8 +176,8 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#FFFFFF", // White background for content box
     borderRadius: 10,
-    padding: 15,
-    marginBottom: 20,
+    padding: 8,
+    marginBottom: 0,
   },
   boxeinside: {
     borderRadius: 10,
@@ -187,6 +205,42 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     paddingBottom: 10, // Adjust as needed
+  },
+  gridContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-evenly",
+    marginBottom: 0,
+    // gap: 10,
+  },
+  summaryBox: {
+    flexDirection: "row",
+    alignItems: "center", // Center items vertically
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 13,
+    width: "45%", // Adjust width as needed
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 5,
+  },
+  icon: {
+    marginRight: 10, // Space between icon and text
+  },
+  textContainer: {
+    flex: 1, // Make text container take the remaining space
+  },
+  texts: {
+    color: colors.white,
+    fontSize: 16, // Slightly smaller font
+    fontWeight: "800",
+    textAlign: "right",
+  },
+  number: {
+    fontSize: 30, // Reduced number size
+    marginTop: 5,
   },
 });
 

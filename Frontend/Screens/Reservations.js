@@ -14,6 +14,7 @@ import {
 import { DataTable, Appbar } from "react-native-paper";
 import axios from "axios";
 import moment from "moment";
+import PatientSearchBar from "../widgets/patient_search_bar";
 import { Picker } from "@react-native-picker/picker";
 // import { ip } from "../constants/variables";
 import Constants from "expo-constants";
@@ -25,6 +26,7 @@ const PatientMasterSheet = ({ navigation }) => {
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
   const { appointments, machines } = useContext(MachineContext);
+  const [patientID, setPatientID] = useState("");
 
   const [selectedMonth, setSelectedMonth] = useState("");
   const [selectedDay, setSelectedDay] = useState("");
@@ -66,6 +68,7 @@ const PatientMasterSheet = ({ navigation }) => {
     setSelectedDay("");
     setSelectedLocation("");
     setSearchQuery("");
+    setPatientID("");
   };
 
   const filteredPatients = patients
@@ -82,23 +85,20 @@ const PatientMasterSheet = ({ navigation }) => {
       const appointmentMonth = moment(appointment.start_time).format("MM");
       const appointmentDay = moment(appointment.start_time).format("dddd");
       const location = getLocationByMachineId(appointment.machine_id)?.location;
-
-      const isMonthMatch = selectedMonth
-        ? appointmentMonth === selectedMonth
-        : true;
+  
+      const isMonthMatch = selectedMonth ? appointmentMonth === selectedMonth : true;
       const isDayMatch = selectedDay ? appointmentDay === selectedDay : true;
-      const isLocationMatch = selectedLocation
-        ? location === selectedLocation
-        : true;
-
-      return isMonthMatch && isDayMatch && isLocationMatch;
+      const isLocationMatch = selectedLocation ? location === selectedLocation : true;
+      const isPatientIdMatch = patientID ? appointment.patient_id === patientID : true;
+  
+      return isMonthMatch && isDayMatch && isLocationMatch && isPatientIdMatch;
     })
     .filter(({ patient }) => {
       return (
         patient.patient_id.includes(searchQuery) ||
         patient.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
-    });
+    }).sort((a, b) => new Date(a.appointment.start_time) - new Date(b.appointment.start_time));
 
   const handleRowPress = (index) => {
     setExpandedRowIndex(expandedRowIndex === index ? null : index);
@@ -129,126 +129,7 @@ const PatientMasterSheet = ({ navigation }) => {
     console.log(appointment.patient_id + "Huuulla");
     navigation.navigate("Form", { appointment }); // Assuming you have a form screen for editing
   };
-  //   return filteredPatients.map(({ patient, appointment }, index) => (
-    // const renderPatientRows = () => {
-  //     <View key={`${patient._id}-${appointment._id}`}>
-  //       {/* <TouchableOpacity onPress={() => handleRowPress(index)}>
-  //         <DataTable.Row style={styles.tableRow}>
-  //           <DataTable.Cell style={styles.cell1}>
-  //             <Text style={styles.cellText}>{patient.patient_id}</Text>
-  //           </DataTable.Cell>
-  //           <DataTable.Cell style={styles.cell2}>
-  //             <Text style={styles.cellText}>{patient.name}</Text>
-  //           </DataTable.Cell>
-  //           <DataTable.Cell style={styles.cell2}>
-  //             <Text style={styles.cellText}>
-  //               {getLocationByMachineId(appointment.machine_id)?.location}
-  //             </Text>
-  //           </DataTable.Cell>
-  //           <DataTable.Cell style={styles.cell}>
-  //             <Text style={styles.cellText}>
-  //               {formatDate(appointment.start_time)}
-  //             </Text>
-  //           </DataTable.Cell>
-  //         </DataTable.Row>
-  //       </TouchableOpacity> */}
-  //       <TouchableOpacity onPress={() => handleRowPress(index)}>
-  //         <DataTable.Row style={styles.tableRow}>
-  //           <DataTable.Cell style={styles.cell1}>
-  //             {patient.patient_id}
-  //           </DataTable.Cell>
-  //           <DataTable.Cell style={styles.cell}>{patient.name}</DataTable.Cell>
-  //           <DataTable.Cell style={styles.cell2}>
-  //             {getLocationByMachineId(appointment.machine_id)?.location}
-  //           </DataTable.Cell>
-  //           <DataTable.Cell style={styles.cell3}>
-  //             {formatDate(appointment.start_time)}
-  //           </DataTable.Cell>
-  //         </DataTable.Row>
-  //       </TouchableOpacity>
-  //       {/* Conditionally render expanded view for this row */}
-  //       {expandedRowIndex === index && (
-  //         <View style={styles.expandedView}>
-  //           <Text>Gender: {patient.gender}</Text>
-  //           <Text>Phone: {patient.phone}</Text>
-  //           <Text>
-  //             Location:{" "}
-  //             {getLocationByMachineId(appointment.machine_id)?.location}
-  //           </Text>
-  //           <Text>Appointment Day: {formatDay(appointment.start_time)}</Text>
 
-  //           {/* Edit and Delete Buttons */}
-  //           <View style={styles.buttonRow}>
-  //             <Button
-  //               title="Edit"
-  //               onPress={() => handleEdit(appointment)}
-  //               color={colors.orange}
-  //             />
-  //             <Button
-  //               title="Delete"
-  //               onPress={() => handleDelete(appointment._id)}
-  //               color={colors.red}
-  //             />
-  //           </View>
-  //         </View>
-  //       )}
-  //     </View>
-  //   ));
-  // };
-  // const renderPatientRows = () => {
-  //   return filteredPatients.map(({ patient, appointment }, index) => (
-  //     <View key={`${patient._id}-${appointment._id}`}>
-  //       <TouchableOpacity onPress={() => handleRowPress(index)}>
-  //         <DataTable.Row style={styles.tableRow}>
-  //           <DataTable.Cell style={styles.cell1}>
-  //             {patient.patient_id}
-  //           </DataTable.Cell>
-  //           <DataTable.Cell style={styles.cell}>{patient.name}</DataTable.Cell>
-  //           <DataTable.Cell style={styles.cell2}>
-  //             {getLocationByMachineId(appointment.machine_id)?.location}
-  //           </DataTable.Cell>
-  //           <DataTable.Cell style={styles.cell3}>
-  //             {formatDate(appointment.start_time)}
-  //           </DataTable.Cell>
-  //         </DataTable.Row>
-  //       </TouchableOpacity>
-
-  //       {expandedRowIndex === index && (
-  //         <View style={styles.expandedView}>
-  //           <View style={styles.patientDetails}>
-  //             <Text style={styles.detailText}>Gender: {patient.gender}</Text>
-  //             <Text style={styles.detailText}>Phone: {patient.phone}</Text>
-  //             <Text style={styles.detailText}>
-  //               Location:{" "}
-  //               {getLocationByMachineId(appointment.machine_id)?.location}
-  //             </Text>
-  //             <Text style={styles.detailText}>
-  //               Appointment Day: {formatDay(appointment.start_time)}
-  //             </Text>
-  //           </View>
-
-  //           {/* Edit and Delete Buttons with Icons */}
-  //           <View style={styles.actionRow}>
-  //             <TouchableOpacity
-  //               style={styles.actionButton}
-  //               onPress={() => handleEdit(appointment)}
-  //             >
-  //               <Text style={styles.actionText}>Edit</Text>
-  //               <Icon name="edit" size={20} color={colors.orange} />
-  //             </TouchableOpacity>
-  //             <TouchableOpacity
-  //               style={styles.actionButton}
-  //               onPress={() => handleDelete(appointment._id)}
-  //             >
-  //               <Text style={styles.actionText}>Delete</Text>
-  //               <Icon name="trash" size={20} color={colors.red} />
-  //             </TouchableOpacity>
-  //           </View>
-  //         </View>
-  //       )}
-  //     </View>
-  //   ));
-  // };
   const renderPatientRows = () => {
     return filteredPatients.map(({ patient, appointment }, index) => (
       <View key={`${patient._id}-${appointment._id}`}>
@@ -272,9 +153,10 @@ const PatientMasterSheet = ({ navigation }) => {
             <View style={styles.patientDetails}>
               <Text style={styles.detailText}>Gender: {patient.gender}</Text>
               <Text style={styles.detailText}>Phone: {patient.phone}</Text>
+              
               <Text style={styles.detailText}>
-                Location:{" "}
-                {getLocationByMachineId(appointment.machine_id)?.location}
+                MachineID:{" "}
+                {getLocationByMachineId(appointment.machine_id)?.machineDetails.manufacturing_serial_number}
               </Text>
               <Text style={styles.detailText}>
                 Appointment Day: {formatDay(appointment.start_time)}
@@ -314,7 +196,7 @@ const PatientMasterSheet = ({ navigation }) => {
   }
 
   return (
-    <ScrollView horizontal={false} vertical={true}> 
+    
     <View style={styles.container}>
       {/* App Bar with Heading */}
       <Appbar.Header style={styles.appbars}>
@@ -328,6 +210,7 @@ const PatientMasterSheet = ({ navigation }) => {
           }}
         />
       </Appbar.Header>
+      <ScrollView horizontal={false} vertical={true}> 
       <View style={styles.contain}>
         {/* Search Bar */}
         <TextInput
@@ -355,6 +238,7 @@ const PatientMasterSheet = ({ navigation }) => {
             <View style={styles.modalOverlay}>
               <View style={styles.modalContent}>
                 <Text style={styles.modalHeader}>Filter Patients</Text>
+          <PatientSearchBar data={patients} set={setPatientID} />
 
                 {/* Filter Options */}
                 <Picker
@@ -456,8 +340,9 @@ const PatientMasterSheet = ({ navigation }) => {
           </ScrollView>
         </ScrollView>
       </View>
+      </ScrollView>
     </View>
-    </ScrollView>
+    
   );
 };
 const styles = StyleSheet.create({
@@ -540,7 +425,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 8,
   },
   tableRow: {
-    backgroundColor: colors.grey, // Row background color
+    backgroundColor: colors.grey.activeOpacity, // Row background color
     justifyContent: "center",
     alignItems: "center",
     borderBottomWidth: 2, // Optional: adds a bottom border to each row
